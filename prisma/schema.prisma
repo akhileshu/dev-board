@@ -9,9 +9,12 @@
  * npx prisma migrate dev --name add_profileSetupDone
  */
 
+// todo : improve by organizing schmea into mulitple files
+
 generator client {
   provider = "prisma-client-js"
 }
+
 generator dbml {
   provider = "prisma-dbml-generator"
 }
@@ -75,38 +78,31 @@ model User {
   assignedTasks Task[]    @relation("AssignedTasks")
   reportedTasks Task[]    @relation("ReportedTasks")
   workLogs      WorkLog[]
-  Comment       Comment[]
+  Comments      Comment[]
+  proposedIdeas Idea[]
 
   @@map("users")
 }
-
 enum Role {
   DEVELOPER
   MANAGER
-  CLIENT
+  USER
 }
 
-enum MilestoneStatus {
-  OPEN
-  COMPLETED
-  CANCELLED
-}
 
-enum FeatureStatus {
-  PROPOSED
-  APPROVED
-  IN_PROGRESS
-  COMPLETED
-}
 
-enum SubtaskStatus {
+enum taskStatus {
   OPEN
   APPROVED
   IN_DEVELOPMENT
   PARKED
   TESTING
   READY_FOR_BUILD
+  UNDER_REVIEW
+  REQUIRES_ITERATION
   DONE
+
+  @@map("SubtaskStatus")
 }
 
 enum OutcomeStatus {
@@ -123,15 +119,25 @@ enum ResourceType {
   ARTICLE
 }
 
+enum MilestoneStatus {
+  OPEN
+  COMPLETED
+  CANCELLED
+}
+enum FeatureStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+}
 model Project {
   id                String  @id @default(uuid())
   name              String
-  category          String // e.g., ecom, banking
+  category          String
   description       String?
-  gitRepo           String? // Optional git repository link
-  documentationLink String? // Optional project docs
-  hostedLink        String? // Optional deployed URL
-  erdLink           String? // ER diagram reference
+  gitRepo           String?
+  documentationLink String?
+  hostedLink        String?
+  erdLink           String?
 
   milestones Milestone[]
   features   Feature[]
@@ -143,7 +149,6 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 model Milestone {
   id          String          @id @default(uuid())
   name        String
@@ -159,14 +164,13 @@ model Milestone {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 model Feature {
   id     String        @id @default(uuid())
   title  String
-  what   String // Problem statement
-  why    String // Why this feature matters
-  how    String // Technical approach (summary)
-  status FeatureStatus @default(PROPOSED)
+  what   String
+  why    String
+  how    String
+  status FeatureStatus @default(OPEN)
 
   milestone   Milestone @relation(fields: [milestoneId], references: [id])
   milestoneId String
@@ -176,52 +180,210 @@ model Feature {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Idea      Idea?    @relation(fields: [ideaId], references: [id])
+  ideaId    String?
 }
 
+/**
+ * Analytics → Understand user behavior and friction points
+ * Persona → Design for user needs and goals
+ * User Journey → Map end-to-end experience
+ * User Feedback → Gather direct insights to refine UX
+ */
 model Task {
   id          String   @id @default(uuid())
   title       String
+  type        String
   description String?
-  tags        String[] // Grouping/filtering
-  what        String // Problem statement
-  why         String // Why this matters
-  how         String // Approach
+  tags        String[]
+  // no need of what , why fields - okr's are good
 
-  status SubtaskStatus @default(OPEN)
+  status taskStatus @default(OPEN)
 
-  expectedOutcome String?
-  actualOutcome   OutcomeStatus?
-  pivotReason     String?
-
-  challenges        String?
-  decisionCriteria  String?
-  buildVsBuy        String?
-  shippingImperfect Boolean @default(false)
-  improvementPlan   String?
-
-  resourcesUsed     String[] // Libraries, tools, docs
-  userFlowDiagram   String? // Diagram or visual link
-  reusableAssetNote String?
-  atomicTasks       Json // { api: [], db: [], ui: [] }
-
-  startDate DateTime?
-  endDate   DateTime?
+  // all expected vs actual can be handled in okr's
 
   featureId String
   feature   Feature @relation(fields: [featureId], references: [id])
 
   assigneeId String?
   assignee   User?   @relation("AssignedTasks", fields: [assigneeId], references: [id])
-
   reporterId String?
   reporter   User?   @relation("ReportedTasks", fields: [reporterId], references: [id])
 
-  timeboxes Timebox[]
-  workLogs  WorkLog[]
+  workLogs WorkLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  taskEngineeringDetail TaskEngineeringDetail?
+  taskProductDetail     TaskProductDetail?
+  taskUxDetail          TaskUxDetail?
+  Idea                  Idea?                  @relation(fields: [ideaId], references: [id])
+  ideaId                String?
+
+  outgoingRelations TaskRelation[] @relation("FromTask")
+  incomingRelations TaskRelation[] @relation("ToTask")
+  /**
+   * todo : we might plan to include
+   * history           TaskHistory[]
+   */
 }
+
+model TaskRelation {
+  id           String           @id @default(uuid())
+  fromTaskId   String
+  toTaskId     String
+  relationType TaskRelationType
+
+  fromTask Task @relation("FromTask", fields: [fromTaskId], references: [id])
+  toTask   Task @relation("ToTask", fields: [toTaskId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+enum TaskRelationType {
+  BLOCKS
+  BLOCKED_BY
+  DUPLICATES
+  RELATED
+  PARENT
+  CHILD
+}
+
+model TaskEngineeringDetail {
+  id                String   @id @default(uuid())
+  how               String // dev gives a short brief
+  challenges        String?
+  decisionCriteria  String?
+  buildVsBuy        String?
+  improvementPlan   String?
+  shippingImperfect Boolean  @default(false)
+  pivotReason       String?
+  Risk              Risk?    @relation(fields: [riskId], references: [id])
+  riskId            String?  @unique
+  reusableAssetNote String?
+  resourcesUsed     String[]
+  atomicTasks       Json // ui , db , api etc
+  effortArea        String? // by dev
+  effortScore       Float?
+
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("engineeringDetails")
+}
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+model Risk {
+  id                    String                 @id @default(uuid())
+  level                 RiskLevel
+  type                  String // delivery, tech, market, legal
+  mitigationPlan        String?
+  taskEngineeringDetail TaskEngineeringDetail?
+}
+
+model TaskProductDetail {
+  id            String    @id @default(uuid())
+  impactArea    String? // by product manager
+  impactScore   Float?
+  priorityScore Float? //impact/effort
+  okrId         String?
+  okr           OKR?      @relation(fields: [okrId], references: [id])
+  timeboxes     Timebox[]
+  startDate     DateTime?
+  endDate       DateTime?
+
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /**
+   * todo: plan to add
+   * baselineMetrics Json? // Before task implementation
+   * targetMetrics Json? // Expected after implementation
+   * actualMetrics Json? // Measured results
+   */
+
+  @@map("productDetails")
+}
+model TaskHistory {
+  id           String   @id @default(uuid())
+  changedField String
+  oldValue     Json
+  newValue     Json
+  changedBy    String
+  changedAt    DateTime @default(now())
+  // Task         Task?    @relation(fields: [taskId], references: [id])
+  // taskId       String?
+}
+model OKR {
+  id        String   @id @default(uuid())
+  title     String
+  createdAt DateTime @default(now())
+
+  outcomeAligned Boolean? // true = met, false = not met, null = not reviewed - can be calculated field based on logic
+  outcomeNotes   String?
+
+  keyResults        KeyResult[]
+  taskProductDetail TaskProductDetail[]
+}
+model KeyResult {
+  id        String         @id @default(uuid())
+  okrId     String
+  okr       OKR            @relation(fields: [okrId], references: [id])
+  area      WorkArea // todo : brainstorm - is it ok that OKR's have results with multiple work area
+  result    String
+  status    OutcomeStatus?
+  notes     String?
+  createdAt DateTime       @default(now())
+}
+
+
+model TaskUxDetail {
+  id                   String       @id @default(uuid())
+  customerFeedbackLink String?
+  analyticsData        Json?
+  analyticsLink        String?
+  analyticsNotes       String?
+  userJourneyId        String?
+  userJourney          UserJourney? @relation(fields: [userJourneyId], references: [id])
+  UserPersona          UserPersona? @relation(fields: [userPersonaId], references: [id])
+  userPersonaId        String?
+
+  task      Task     @relation(fields: [taskId], references: [id])
+  taskId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("uxDetails")
+}
+model UserPersona {
+  id         String   @id @default(uuid())
+  name       String
+  goals      String[]
+  painPoints String[]
+
+  createdAt    DateTime       @default(now())
+  taskUxDetail TaskUxDetail[]
+}
+model UserJourney {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  persona     String?
+  diagramLink String?
+  createdAt   DateTime @default(now())
+
+  Idea         Idea[]
+  taskUxDetail TaskUxDetail[]
+}
+
 
 model WorkLog {
   id        String   @id @default(uuid())
@@ -231,7 +393,7 @@ model WorkLog {
   user      User     @relation(fields: [userId], references: [id])
   startTime DateTime
   endTime   DateTime
-  duration  Int // In minutes
+  duration  Int
   comment   String?
 
   createdAt DateTime @default(now())
@@ -248,37 +410,45 @@ model Comment {
 }
 
 model Template {
-  id             String     @id @default(uuid())
-  type           String // e.g., "ecom", "banking", etc.
-  description    String?
-  tags           String[]
-  resources      Resource[] // GitHub links, docs, etc.
-  guide          String? // Boilerplate setup guide
-  sampleProjects Project[]
+  id               String             @id @default(uuid())
+  type             String
+  description      String?
+  tags             String[]
+  TemplateResource TemplateResource[]
+  guide            String?
+  sampleProjects   Project[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
+model TemplateResource {
+  id         String    @id @default(uuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Template   Template? @relation(fields: [templateId], references: [id])
+  templateId String?
+  Resource   Resource? @relation(fields: [resourceId], references: [id])
+  resourceId String?
+}
 model Resource {
   id          String       @id @default(uuid())
   name        String
   type        ResourceType
   url         String
   description String?
-  templateId  String
-  template    Template     @relation(fields: [templateId], references: [id])
-  createdAt   DateTime     @default(now())
+
+  TemplateResource TemplateResource[]
+
+  createdAt DateTime @default(now())
 }
 
 model Calendar {
   id        String    @id @default(uuid())
-  name      String // e.g., "Team Alpha Calendar"
+  name      String
   timeboxes Timebox[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
-
 model Timebox {
   id    String   @id @default(uuid())
   title String?
@@ -288,9 +458,71 @@ model Timebox {
   calendarId String
   calendar   Calendar @relation(fields: [calendarId], references: [id])
 
-  taskId String
-  task   Task   @relation(fields: [taskId], references: [id])
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  taskProductDetail TaskProductDetail? @relation(fields: [productDetailsId], references: [id])
+  productDetailsId  String?
+}
 
+
+
+
+
+model Idea {
+  id          String     @id @default(uuid()) // Unique idea ID
+  title       String // Short title of the idea
+  description String? // Detailed explanation
+  authorId    String // Who suggested the idea
+  author      User       @relation(fields: [authorId], references: [id])
+  status      IdeaStatus @default(SUGGESTED) // Current stage of the idea
+  tags        String[] // Tags for filtering/classification
+  votes       Int        @default(0) // Upvotes or likes
+
+  //TODO : IMPACT , EFFORT RELATED DETAILS NEED TO RESTRUCTURED
+  impactArea  String?
+  impactScore Float?
+
+  scope           IdeaScope @default(TBD) // feature, task, tbd
+  relatedFeatures Feature[] // Many-to-many if scope becomes feature
+  relatedTasks    Task[] // Many-to-many if scope becomes task
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  UserJourney   UserJourney? @relation(fields: [userJourneyId], references: [id])
+  userJourneyId String?
+}
+enum IdeaStatus {
+  SUGGESTED // Just added by a user
+  UNDER_REVIEW // Being evaluated or discussed
+  ACCEPTED // Approved to become a feature/task
+  REJECTED // Not moving forward
+}
+enum IdeaScope {
+  FEATURE
+  TASK
+  TBD
+}
+
+enum WorkArea {
+  ENGINEERING //  Improve CI/CD pipeline speed by 30%
+  PRODUCT_MANAGEMENT // Increase adoption of new feature by 25%
+  USER_EXPERIENCE //Reduce user drop-off rate on onboarding screen
+}
+
+// todo : integrate todo's - into our app , in product management life cycle - we get many thoughts but we dont retain them all 
+model TodoNote {
+  id        String   @id @default(uuid())
+  content   String
+  type      TodoType
+  linkedTo  String? // Optional metadata: “task/feature/idea”
+  linkId    String? // ID of the linked item
+  createdBy String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+enum TodoType {
+  IDEA
+  FEEDBACK
+  TASK
+  QUESTION
 }

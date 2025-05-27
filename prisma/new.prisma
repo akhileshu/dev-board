@@ -1,0 +1,455 @@
+// // This is your Prisma schema file,
+// // learn more about it in the docs: [https://pris.ly/d/prisma-schema](https://pris.ly/d/prisma-schema)
+
+// // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// // Try Prisma Accelerate: [https://pris.ly/cli/accelerate-init](https://pris.ly/cli/accelerate-init)
+
+// generator client {
+//     provider = "prisma-client-js"
+// }
+
+// generator dbml {
+//     provider = "prisma-dbml-generator"
+// }
+
+// datasource db {
+//     provider = "postgresql"
+//     url      = env("DATABASE_URL")
+// }
+
+// model Account {
+//     id                String  @id @default(cuid())
+//     userId            String  @map("user_id")
+//     type              String
+//     provider          String
+//     providerAccountId String  @map("provider_account_id")
+//     refresh_token     String? @db.Text
+//     access_token      String? @db.Text
+//     expires_at        Int?
+//     token_type        String?
+//     scope             String?
+//     id_token          String? @db.Text
+//     session_state     String?
+
+//     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//     @@unique([provider, providerAccountId])
+//     @@map("accounts")
+// }
+
+// model Session {
+//     id           String   @id @default(cuid())
+//     sessionToken String   @unique @map("session_token")
+//     userId       String   @map("user_id")
+//     expires      DateTime
+//     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//     @@map("sessions")
+// }
+
+// model VerificationToken {
+//     identifier String
+//     token      String
+//     expires    DateTime
+
+//     @@unique([identifier, token])
+//     @@map("verification_tokens")
+// }
+
+// model User {
+//     id                 String    @id @default(cuid())
+//     name               String?
+//     email              String?   @unique
+//     emailVerified      DateTime? @map("email_verified")
+//     image              String?
+//     accounts           Account[]
+//     sessions           Session[]
+//     isProfileSetupDone Boolean   @default(false)
+
+//     role Role @default(DEVELOPER)
+
+//     assignedTasks Task[]    @relation("AssignedTasks")
+//     reportedTasks Task[]    @relation("ReportedTasks")
+//     workLogs      WorkLog[]
+//     Comments      Comment[]
+//     proposedIdeas Idea[]
+
+//     @@map("users")
+// }
+
+// enum Role {
+//     DEVELOPER
+//     MANAGER
+//     USER
+// }
+
+// enum MilestoneStatus {
+//     OPEN
+//     COMPLETED
+//     CANCELLED
+// }
+
+// enum FeatureStatus {
+//     OPEN
+//     IN_PROGRESS
+//     COMPLETED
+// }
+
+// enum taskStatus {
+//     OPEN
+//     APPROVED
+//     IN_DEVELOPMENT
+//     PARKED
+//     TESTING
+//     READY_FOR_BUILD
+//     UNDER_REVIEW
+//     REQUIRES_ITERATION
+//     DONE
+
+//     @@map("SubtaskStatus")
+// }
+
+// enum OutcomeStatus {
+//     OK
+//     EXCEEDS
+//     FAILED
+// }
+
+// enum ResourceType {
+//     GIT_REPO
+//     DOC
+//     VIDEO
+//     TOOL
+//     ARTICLE
+// }
+
+// model Project {
+//     id                String  @id @default(uuid())
+//     name              String
+//     category          String
+//     description       String?
+//     gitRepo           String?
+//     documentationLink String?
+//     hostedLink        String?
+//     erdLink           String?
+
+//     milestones Milestone[]
+//     features   Feature[]
+//     comments   Comment[]
+
+//     templateId String?
+//     template   Template? @relation(fields: [templateId], references: [id])
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// model Milestone {
+//     id          String          @id @default(uuid())
+//     name        String
+//     description String?
+//     startDate   DateTime?
+//     endDate     DateTime?
+//     status      MilestoneStatus @default(OPEN)
+
+//     project   Project   @relation(fields: [projectId], references: [id])
+//     projectId String
+//     features  Feature[]
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// model Feature {
+//     id     String        @id @default(uuid())
+//     title  String
+//     what   String
+//     why    String
+//     how    String
+//     status FeatureStatus @default(OPEN)
+
+//     milestone   Milestone @relation(fields: [milestoneId], references: [id])
+//     milestoneId String
+//     project     Project   @relation(fields: [projectId], references: [id])
+//     projectId   String
+//     tasks       Task[]
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// /**
+//  * Analytics → Understand user behavior and friction points
+//  * Persona → Design for user needs and goals
+//  * User Journey → Map end-to-end experience
+//  * User Feedback → Gather direct insights to refine UX
+//  */
+// model Task {
+//     id          String   @id @default(uuid())
+//     title       String
+//     type        String
+//     description String?
+//     tags        String[]
+//     // no need of what , why fields - okr's are good
+
+//     status taskStatus @default(OPEN)
+
+//     // all expected vs actual can be handled in okr's
+
+//     featureId String
+//     feature   Feature @relation(fields: [featureId], references: [id])
+
+//     assigneeId String?
+//     assignee   User?   @relation("AssignedTasks", fields: [assigneeId], references: [id])
+//     reporterId String?
+//     reporter   User?   @relation("ReportedTasks", fields: [reporterId], references: [id])
+
+//     workLogs WorkLog[]
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+
+//     taskEngineeringDetails engineeringDetails?
+//     productDetails         productDetails?
+//     uxDetails              uxDetails?
+// }
+
+// model engineeringDetails {
+//     id                String   @id @default(uuid())
+//     how               String // dev gives a short brief
+//     challenges        String?
+//     decisionCriteria  String?
+//     buildVsBuy        String?
+//     improvementPlan   String?
+//     shippingImperfect Boolean  @default(false)
+//     pivotReason       String?
+//     Risk              Risk?    @relation(fields: [riskId], references: [id])
+//     riskId            String?  @unique
+//     reusableAssetNote String?
+//     resourcesUsed     String[]
+//     atomicTasks       Json // ui , db , api etc
+//     effortArea        String? // by dev
+//     effortScore       Float?
+
+//     task      Task     @relation(fields: [taskId], references: [id])
+//     taskId    String   @unique
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// model productDetails {
+//     id            String    @id @default(uuid())
+//     impactArea    String? // by product manager
+//     impactScore   Float?
+//     priorityScore Float? //impact/effort
+//     okrId         String?
+//     okr           OKR?      @relation(fields: [okrId], references: [id])
+//     timeboxes     Timebox[]
+//     startDate     DateTime?
+//     endDate       DateTime?
+
+//     task      Task     @relation(fields: [taskId], references: [id])
+//     taskId    String   @unique
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// model uxDetails {
+//     id                   String       @id @default(uuid())
+//     customerFeedbackLink String?
+//     analyticsData        Json?
+//     analyticsLink        String?
+//     analyticsNotes       String?
+//     userJourneyId        String?
+//     userJourney          UserJourney? @relation(fields: [userJourneyId], references: [id])
+//     UserPersona          UserPersona? @relation(fields: [userPersonaId], references: [id])
+//     userPersonaId        String?
+
+//     task      Task     @relation(fields: [taskId], references: [id])
+//     taskId    String   @unique
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// enum RiskLevel {
+//     LOW
+//     MEDIUM
+//     HIGH
+// }
+
+// model Risk {
+//     id                    String              @id @default(uuid())
+//     level                 RiskLevel
+//     type                  String // delivery, tech, market, legal
+//     mitigationPlan        String?
+//     taskEngineeringDetail engineeringDetails?
+// }
+
+// model WorkLog {
+//     id        String   @id @default(uuid())
+//     taskId    String
+//     task      Task     @relation(fields: [taskId], references: [id])
+//     userId    String
+//     user      User     @relation(fields: [userId], references: [id])
+//     startTime DateTime
+//     endTime   DateTime
+//     duration  Int
+//     comment   String?
+
+//     createdAt DateTime @default(now())
+// }
+
+// model Comment {
+//     id        String   @id @default(uuid())
+//     message   String
+//     authorId  String
+//     author    User     @relation(fields: [authorId], references: [id])
+//     projectId String
+//     project   Project  @relation(fields: [projectId], references: [id])
+//     createdAt DateTime @default(now())
+// }
+
+// model Template {
+//     id               String             @id @default(uuid())
+//     type             String
+//     description      String?
+//     tags             String[]
+//     TemplateResource TemplateResource[]
+//     guide            String?
+//     sampleProjects   Project[]
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+// }
+
+// model TemplateResource {
+//     id         String    @id @default(uuid())
+//     createdAt  DateTime  @default(now())
+//     updatedAt  DateTime  @updatedAt
+//     Template   Template? @relation(fields: [templateId], references: [id])
+//     templateId String?
+//     Resource   Resource? @relation(fields: [resourceId], references: [id])
+//     resourceId String?
+// }
+
+// model Resource {
+//     id          String       @id @default(uuid())
+//     name        String
+//     type        ResourceType
+//     url         String
+//     description String?
+
+//     TemplateResource TemplateResource[]
+
+//     createdAt DateTime @default(now())
+// }
+
+// model Calendar {
+//     id        String    @id @default(uuid())
+//     name      String
+//     timeboxes Timebox[]
+//     createdAt DateTime  @default(now())
+//     updatedAt DateTime  @updatedAt
+// }
+
+// model Timebox {
+//     id    String   @id @default(uuid())
+//     title String?
+//     start DateTime
+//     end   DateTime
+
+//     calendarId String
+//     calendar   Calendar @relation(fields: [calendarId], references: [id])
+
+//     createdAt        DateTime        @default(now())
+//     updatedAt        DateTime        @updatedAt
+//     productDetails   productDetails? @relation(fields: [productDetailsId], references: [id])
+//     productDetailsId String?
+// }
+
+// model OKR {
+//     id        String   @id @default(uuid())
+//     title     String
+//     createdAt DateTime @default(now())
+
+//     outcomeAligned Boolean? // true = met, false = not met, null = not reviewed - can be calculated field based on logic
+//     outcomeNotes   String?
+
+//     keyResults     KeyResult[]
+//     productDetails productDetails[]
+// }
+
+// model KeyResult {
+//     id        String         @id @default(uuid())
+//     okrId     String
+//     okr       OKR            @relation(fields: [okrId], references: [id])
+//     area      WorkArea
+//     result    String
+//     status    OutcomeStatus?
+//     notes     String?
+//     createdAt DateTime       @default(now())
+// }
+
+// model UserPersona {
+//     id         String   @id @default(uuid())
+//     name       String
+//     goals      String[]
+//     painPoints String[]
+
+//     createdAt DateTime    @default(now())
+//     uxDetails uxDetails[]
+// }
+
+// model UserJourney {
+//     id          String   @id @default(uuid())
+//     name        String
+//     description String?
+//     persona     String?
+//     diagramLink String?
+//     createdAt   DateTime @default(now())
+
+//     Idea      Idea[]
+//     uxDetails uxDetails[]
+// }
+
+// model Idea {
+//     id          String     @id @default(uuid()) // Unique idea ID
+//     title       String // Short title of the idea
+//     description String? // Detailed explanation
+//     authorId    String // Who suggested the idea
+//     author      User       @relation(fields: [authorId], references: [id])
+//     status      IdeaStatus @default(SUGGESTED) // Current stage of the idea
+//     tags        String[] // Tags for filtering/classification
+//     votes       Int        @default(0) // Upvotes or likes
+
+//     //TODO : IMPACT , EFFORT RELATED DETAILS NEED TO RESTRUCTURED
+//     impactArea  String?
+//     impactScore Float?
+
+//     scope IdeaScope @default(TBD) // feature, task, tbd
+//     // TODO : if accepted then - feature / task is linked to it
+
+//     createdAt     DateTime     @default(now())
+//     updatedAt     DateTime     @updatedAt
+//     UserJourney   UserJourney? @relation(fields: [userJourneyId], references: [id])
+//     userJourneyId String?
+// }
+
+// enum IdeaStatus {
+//     SUGGESTED // Just added by a user
+//     UNDER_REVIEW // Being evaluated or discussed
+//     ACCEPTED // Approved to become a feature/task
+//     REJECTED // Not moving forward
+// }
+
+// enum WorkArea {
+//     ENGINEERING //  Improve CI/CD pipeline speed by 30%
+//     PRODUCT_MANAGEMENT // Increase adoption of new feature by 25%
+//     USER_EXPERIENCE //Reduce user drop-off rate on onboarding screen
+// }
+
+// enum IdeaScope {
+//     FEATURE
+//     TASK
+//     TBD
+// }
