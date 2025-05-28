@@ -1,94 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-/**
- * after schema changes
- * npx prisma migrate dev --name add_profileSetupDone
- */
-
-// todo : improve by organizing schmea into mulitple files
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String  @map("user_id")
-  type              String
-  provider          String
-  providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
-}
-
-model User {
-  id                 String    @id @default(cuid())
-  name               String?
-  email              String?   @unique
-  emailVerified      DateTime? @map("email_verified")
-  image              String?
-  accounts           Account[]
-  sessions           Session[]
-  isProfileSetupDone Boolean   @default(false)
-
-  role Role @default(DEVELOPER)
-
-  assignedTasks Task[]    @relation("AssignedTasks")
-  reportedTasks Task[]    @relation("ReportedTasks")
-  workLogs      WorkLog[]
-  Comments      Comment[]
-  proposedIdeas Idea[]
-
-  @@map("users")
-}
-enum Role {
-  DEVELOPER
-  MANAGER
-  USER
-}
-
 
 
 enum taskStatus {
@@ -119,77 +28,20 @@ enum ResourceType {
   ARTICLE
 }
 
-enum MilestoneStatus {
-  OPEN
-  COMPLETED
-  CANCELLED
-}
-enum FeatureStatus {
-  OPEN
-  IN_PROGRESS
-  COMPLETED
-}
-model Project {
-  id                String  @id @default(uuid())
-  name              String
-  category          String
-  description       String?
-  gitRepo           String?
-  documentationLink String?
-  hostedLink        String?
-  erdLink           String?
 
-  milestones Milestone[]
-  features   Feature[]
-  comments   Comment[]
 
-  templateId String?
-  template   Template? @relation(fields: [templateId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-model Milestone {
-  id          String          @id @default(uuid())
-  name        String
-  description String?
-  startDate   DateTime?
-  endDate     DateTime?
-  status      MilestoneStatus @default(OPEN)
 
-  project   Project   @relation(fields: [projectId], references: [id])
-  projectId String
-  features  Feature[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-model Feature {
-  id     String        @id @default(uuid())
-  title  String
-  what   String
-  why    String
-  how    String
-  status FeatureStatus @default(OPEN)
 
-  milestone   Milestone @relation(fields: [milestoneId], references: [id])
-  milestoneId String
-  project     Project   @relation(fields: [projectId], references: [id])
-  projectId   String
-  tasks       Task[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Idea      Idea?    @relation(fields: [ideaId], references: [id])
-  ideaId    String?
-}
 
-/**
- * Analytics → Understand user behavior and friction points
- * Persona → Design for user needs and goals
- * User Journey → Map end-to-end experience
- * User Feedback → Gather direct insights to refine UX
- */
+// /**
+//  * Analytics → Understand user behavior and friction points
+//  * Persona → Design for user needs and goals
+//  * User Journey → Map end-to-end experience
+//  * User Feedback → Gather direct insights to refine UX
+//  */
 model Task {
   id          String   @id @default(uuid())
   title       String
@@ -274,11 +126,13 @@ model TaskEngineeringDetail {
 
   @@map("engineeringDetails")
 }
+
 enum RiskLevel {
   LOW
   MEDIUM
   HIGH
 }
+
 model Risk {
   id                    String                 @id @default(uuid())
   level                 RiskLevel
@@ -312,6 +166,7 @@ model TaskProductDetail {
 
   @@map("productDetails")
 }
+
 model TaskHistory {
   id           String   @id @default(uuid())
   changedField String
@@ -322,6 +177,7 @@ model TaskHistory {
   // Task         Task?    @relation(fields: [taskId], references: [id])
   // taskId       String?
 }
+
 model OKR {
   id        String   @id @default(uuid())
   title     String
@@ -333,6 +189,7 @@ model OKR {
   keyResults        KeyResult[]
   taskProductDetail TaskProductDetail[]
 }
+
 model KeyResult {
   id        String         @id @default(uuid())
   okrId     String
@@ -343,7 +200,6 @@ model KeyResult {
   notes     String?
   createdAt DateTime       @default(now())
 }
-
 
 model TaskUxDetail {
   id                   String       @id @default(uuid())
@@ -363,6 +219,7 @@ model TaskUxDetail {
 
   @@map("uxDetails")
 }
+
 model UserPersona {
   id         String   @id @default(uuid())
   name       String
@@ -372,6 +229,7 @@ model UserPersona {
   createdAt    DateTime       @default(now())
   taskUxDetail TaskUxDetail[]
 }
+
 model UserJourney {
   id          String   @id @default(uuid())
   name        String
@@ -383,7 +241,6 @@ model UserJourney {
   Idea         Idea[]
   taskUxDetail TaskUxDetail[]
 }
-
 
 model WorkLog {
   id        String   @id @default(uuid())
@@ -409,27 +266,8 @@ model Comment {
   createdAt DateTime @default(now())
 }
 
-model Template {
-  id               String             @id @default(uuid())
-  type             String
-  description      String?
-  tags             String[]
-  TemplateResource TemplateResource[]
-  guide            String?
-  sampleProjects   Project[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-model TemplateResource {
-  id         String    @id @default(uuid())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  Template   Template? @relation(fields: [templateId], references: [id])
-  templateId String?
-  Resource   Resource? @relation(fields: [resourceId], references: [id])
-  resourceId String?
-}
+
 model Resource {
   id          String       @id @default(uuid())
   name        String
@@ -449,6 +287,7 @@ model Calendar {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
+
 model Timebox {
   id    String   @id @default(uuid())
   title String?
@@ -465,43 +304,6 @@ model Timebox {
 }
 
 
-
-
-
-model Idea {
-  id          String     @id @default(uuid()) // Unique idea ID
-  title       String // Short title of the idea
-  description String? // Detailed explanation
-  authorId    String // Who suggested the idea
-  author      User       @relation(fields: [authorId], references: [id])
-  status      IdeaStatus @default(SUGGESTED) // Current stage of the idea
-  tags        String[] // Tags for filtering/classification
-  votes       Int        @default(0) // Upvotes or likes
-
-  //TODO : IMPACT , EFFORT RELATED DETAILS NEED TO RESTRUCTURED
-  impactArea  String?
-  impactScore Float?
-
-  scope           IdeaScope @default(TBD) // feature, task, tbd
-  relatedFeatures Feature[] // Many-to-many if scope becomes feature
-  relatedTasks    Task[] // Many-to-many if scope becomes task
-
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  UserJourney   UserJourney? @relation(fields: [userJourneyId], references: [id])
-  userJourneyId String?
-}
-enum IdeaStatus {
-  SUGGESTED // Just added by a user
-  UNDER_REVIEW // Being evaluated or discussed
-  ACCEPTED // Approved to become a feature/task
-  REJECTED // Not moving forward
-}
-enum IdeaScope {
-  FEATURE
-  TASK
-  TBD
-}
 
 enum WorkArea {
   ENGINEERING //  Improve CI/CD pipeline speed by 30%
@@ -520,6 +322,7 @@ model TodoNote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 enum TodoType {
   IDEA
   FEEDBACK

@@ -1,0 +1,25 @@
+// # OKRs, TimeToMarket, LaunchMilestone
+
+model LaunchMilestone {
+  id         String           @id @default(uuid())
+  MVPDetailsId  String
+  MVPDetails    MVPDetails  @relation(fields: [MVPDetailsId], references: [id])
+
+  title      String           // e.g. "Beta Launch"
+  dueDate    DateTime
+  status     MilestoneStatus
+}
+
+model TimeToMarket {
+  id            String   @id @default(uuid())
+  MVPDetailsId  String @unique
+  MVPDetails    MVPDetails  @relation(fields: [MVPDetailsId], references: [id])
+
+  estimatedDays Int
+  actualDays    Int?
+  blockers      String?
+  notes         String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

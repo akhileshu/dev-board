@@ -1,0 +1,645 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table MVPDetails {
+  id String [pk]
+  projectId String [unique, not null]
+  project Project [not null]
+  stage MvpStage [not null, default: 'IDEA_VALIDATION']
+  startedAt DateTime
+  notes String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  goToMarkets GoToMarket [not null]
+  timeToMarket TimeToMarket
+  validationMetrics ValidationMetric [not null]
+  positionings Positioning [not null]
+  earlyAdopters EarlyAdopter [not null]
+  launchMilestones LaunchMilestone [not null]
+  waitlistEntries WaitlistEntry [not null]
+  timeToMarketId String
+}
+
+Table Project {
+  id String [pk]
+  name String [not null]
+  category String [not null]
+  description String
+  gitRepo String
+  documentationLink String
+  hostedLink String
+  erdLink String
+  milestones Milestone [not null]
+  features Feature [not null]
+  comments Comment [not null]
+  templateId String
+  template Template
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  targetMarkets TargetMarket [not null]
+  MVPDetails MVPDetails
+}
+
+Table Milestone {
+  id String [pk]
+  name String [not null]
+  description String
+  startDate DateTime
+  endDate DateTime
+  status MilestoneStatus [not null, default: 'OPEN']
+  project Project [not null]
+  projectId String [not null]
+  features Feature [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Feature {
+  id String [pk]
+  title String [not null]
+  what String [not null]
+  why String [not null]
+  how String [not null]
+  status FeatureStatus [not null, default: 'OPEN']
+  milestone Milestone [not null]
+  milestoneId String [not null]
+  project Project [not null]
+  projectId String [not null]
+  tasks Task [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Idea Idea
+  ideaId String
+}
+
+Table Template {
+  id String [pk]
+  type String [not null]
+  description String
+  tags String[] [not null]
+  TemplateResource TemplateResource [not null]
+  guide String
+  sampleProjects Project [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table TemplateResource {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Template Template
+  templateId String
+  Resource Resource
+  resourceId String
+}
+
+Table Task {
+  id String [pk]
+  title String [not null]
+  type String [not null]
+  description String
+  tags String[] [not null]
+  status taskStatus [not null, default: 'OPEN']
+  featureId String [not null]
+  feature Feature [not null]
+  assigneeId String
+  assignee users
+  reporterId String
+  reporter users
+  workLogs WorkLog [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  taskEngineeringDetail engineeringDetails
+  taskProductDetail productDetails
+  taskUxDetail uxDetails
+  Idea Idea
+  ideaId String
+  outgoingRelations TaskRelation [not null]
+  incomingRelations TaskRelation [not null]
+
+  Note: '*
+ * Analytics → Understand user behavior and friction points
+ * Persona → Design for user needs and goals
+ * User Journey → Map end-to-end experience
+ * User Feedback → Gather direct insights to refine UX'
+}
+
+Table TaskRelation {
+  id String [pk]
+  fromTaskId String [not null]
+  toTaskId String [not null]
+  relationType TaskRelationType [not null]
+  fromTask Task [not null]
+  toTask Task [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table engineeringDetails {
+  id String [pk]
+  how String [not null]
+  challenges String
+  decisionCriteria String
+  buildVsBuy String
+  improvementPlan String
+  shippingImperfect Boolean [not null, default: false]
+  pivotReason String
+  Risk Risk
+  riskId String [unique]
+  reusableAssetNote String
+  resourcesUsed String[] [not null]
+  atomicTasks Json [not null]
+  effortArea String
+  effortScore Float
+  task Task [not null]
+  taskId String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Risk {
+  id String [pk]
+  level RiskLevel [not null]
+  type String [not null]
+  mitigationPlan String
+  taskEngineeringDetail engineeringDetails
+}
+
+Table productDetails {
+  id String [pk]
+  impactArea String
+  impactScore Float
+  priorityScore Float
+  okrId String
+  okr OKR
+  timeboxes Timebox [not null]
+  startDate DateTime
+  endDate DateTime
+  task Task [not null]
+  taskId String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table TaskHistory {
+  id String [pk]
+  changedField String [not null]
+  oldValue Json [not null]
+  newValue Json [not null]
+  changedBy String [not null]
+  changedAt DateTime [default: `now()`, not null]
+}
+
+Table OKR {
+  id String [pk]
+  title String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  outcomeAligned Boolean
+  outcomeNotes String
+  keyResults KeyResult [not null]
+  taskProductDetail productDetails [not null]
+}
+
+Table KeyResult {
+  id String [pk]
+  okrId String [not null]
+  okr OKR [not null]
+  area WorkArea [not null]
+  result String [not null]
+  status OutcomeStatus
+  notes String
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table uxDetails {
+  id String [pk]
+  customerFeedbackLink String
+  analyticsData Json
+  analyticsLink String
+  analyticsNotes String
+  userJourneyId String
+  userJourney UserJourney
+  UserPersona UserPersona
+  userPersonaId String
+  task Task [not null]
+  taskId String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table UserPersona {
+  id String [pk]
+  name String [not null]
+  goals String[] [not null]
+  painPoints String[] [not null]
+  createdAt DateTime [default: `now()`, not null]
+  taskUxDetail uxDetails [not null]
+}
+
+Table UserJourney {
+  id String [pk]
+  name String [not null]
+  description String
+  persona String
+  diagramLink String
+  createdAt DateTime [default: `now()`, not null]
+  Idea Idea [not null]
+  taskUxDetail uxDetails [not null]
+}
+
+Table WorkLog {
+  id String [pk]
+  taskId String [not null]
+  task Task [not null]
+  userId String [not null]
+  user users [not null]
+  startTime DateTime [not null]
+  endTime DateTime [not null]
+  duration Int [not null]
+  comment String
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Comment {
+  id String [pk]
+  message String [not null]
+  authorId String [not null]
+  author users [not null]
+  projectId String [not null]
+  project Project [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Resource {
+  id String [pk]
+  name String [not null]
+  type ResourceType [not null]
+  url String [not null]
+  description String
+  TemplateResource TemplateResource [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Calendar {
+  id String [pk]
+  name String [not null]
+  timeboxes Timebox [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Timebox {
+  id String [pk]
+  title String
+  start DateTime [not null]
+  end DateTime [not null]
+  calendarId String [not null]
+  calendar Calendar [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  taskProductDetail productDetails
+  productDetailsId String
+}
+
+Table TodoNote {
+  id String [pk]
+  content String [not null]
+  type TodoType [not null]
+  linkedTo String
+  linkId String
+  createdBy String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Idea {
+  id String [pk]
+  title String [not null]
+  description String
+  authorId String [not null]
+  author users [not null]
+  status IdeaStatus [not null, default: 'SUGGESTED']
+  tags String[] [not null]
+  votes Int [not null, default: 0]
+  impactArea String
+  impactScore Float
+  scope IdeaScope [not null, default: 'TBD']
+  relatedFeatures Feature [not null]
+  relatedTasks Task [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  UserJourney UserJourney
+  userJourneyId String
+}
+
+Table WaitlistEntry {
+  id String [pk]
+  MVPDetailsId String [not null]
+  MVPDetails MVPDetails [not null]
+  email String [not null]
+  source String
+  joinedAt DateTime [default: `now()`, not null]
+}
+
+Table Positioning {
+  id String [pk]
+  MVPDetailsId String [not null]
+  MVPDetails MVPDetails [not null]
+  valueProp String [not null]
+  differentiation String [not null]
+  slogan String
+  tagline String
+}
+
+Table GoToMarket {
+  id String [pk]
+  MVPDetailsId String [not null]
+  MVPDetails MVPDetails [not null]
+  strategy String [not null]
+  budget Float
+  channels String[] [not null]
+  notes String
+}
+
+Table TargetMarket {
+  id String [pk]
+  projectId String [not null]
+  project Project [not null]
+  segment String [not null]
+  painPoints String[] [not null]
+  size String
+  notes String
+}
+
+Table LaunchMilestone {
+  id String [pk]
+  MVPDetailsId String [not null]
+  MVPDetails MVPDetails [not null]
+  title String [not null]
+  dueDate DateTime [not null]
+  status MilestoneStatus [not null]
+}
+
+Table TimeToMarket {
+  id String [pk]
+  MVPDetailsId String [unique, not null]
+  MVPDetails MVPDetails [not null]
+  estimatedDays Int [not null]
+  actualDays Int
+  blockers String
+  notes String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table accounts {
+  id String [pk]
+  userId String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  user users [not null]
+
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+Table sessions {
+  id String [pk]
+  sessionToken String [unique, not null]
+  userId String [not null]
+  expires DateTime [not null]
+  user users [not null]
+}
+
+Table verification_tokens {
+  identifier String [not null]
+  token String [not null]
+  expires DateTime [not null]
+
+  indexes {
+    (identifier, token) [unique]
+  }
+}
+
+Table users {
+  id String [pk]
+  name String
+  email String [unique]
+  emailVerified DateTime
+  image String
+  accounts accounts [not null]
+  sessions sessions [not null]
+  isProfileSetupDone Boolean [not null, default: false]
+  role Role [not null, default: 'DEVELOPER']
+  assignedTasks Task [not null]
+  reportedTasks Task [not null]
+  workLogs WorkLog [not null]
+  Comments Comment [not null]
+  proposedIdeas Idea [not null]
+}
+
+Table EarlyAdopter {
+  id String [pk]
+  MVPDetailsId String [not null]
+  MVPDetails MVPDetails [not null]
+  name String [not null]
+  contact String [not null]
+  role String
+  notes String
+}
+
+Table ValidationMetric {
+  id String [pk]
+  MVPDetailsId String [not null]
+  MVPDetails MVPDetails [not null]
+  goal String [not null]
+  metric String [not null]
+  target Float [not null]
+  actual Float
+  status OutcomeStatus
+}
+
+Enum MvpStage {
+  IDEA_VALIDATION
+  MVP_DEFINITION
+  BUILDING
+  TESTING
+  READY_TO_LAUNCH
+  LAUNCHED
+  POST_LAUNCH
+}
+
+Enum Role {
+  DEVELOPER
+  MANAGER
+  USER
+}
+
+Enum MilestoneStatus {
+  OPEN
+  COMPLETED
+  CANCELLED
+}
+
+Enum FeatureStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+
+Enum taskStatus {
+  OPEN
+  APPROVED
+  IN_DEVELOPMENT
+  PARKED
+  TESTING
+  READY_FOR_BUILD
+  UNDER_REVIEW
+  REQUIRES_ITERATION
+  DONE
+}
+
+Enum OutcomeStatus {
+  OK
+  EXCEEDS
+  FAILED
+}
+
+Enum ResourceType {
+  GIT_REPO
+  DOC
+  VIDEO
+  TOOL
+  ARTICLE
+}
+
+Enum TaskRelationType {
+  BLOCKS
+  BLOCKED_BY
+  DUPLICATES
+  RELATED
+  PARENT
+  CHILD
+}
+
+Enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+Enum WorkArea {
+  ENGINEERING
+  PRODUCT_MANAGEMENT
+  USER_EXPERIENCE
+}
+
+Enum TodoType {
+  IDEA
+  FEEDBACK
+  TASK
+  QUESTION
+}
+
+Enum IdeaStatus {
+  SUGGESTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+Enum IdeaScope {
+  FEATURE
+  TASK
+  TBD
+}
+
+Ref: MVPDetails.projectId - Project.id
+
+Ref: Project.templateId > Template.id
+
+Ref: Milestone.projectId > Project.id
+
+Ref: Feature.milestoneId > Milestone.id
+
+Ref: Feature.projectId > Project.id
+
+Ref: Feature.ideaId > Idea.id
+
+Ref: TemplateResource.templateId > Template.id
+
+Ref: TemplateResource.resourceId > Resource.id
+
+Ref: Task.featureId > Feature.id
+
+Ref: Task.assigneeId > users.id
+
+Ref: Task.reporterId > users.id
+
+Ref: Task.ideaId > Idea.id
+
+Ref: TaskRelation.fromTaskId > Task.id
+
+Ref: TaskRelation.toTaskId > Task.id
+
+Ref: engineeringDetails.riskId - Risk.id
+
+Ref: engineeringDetails.taskId - Task.id
+
+Ref: productDetails.okrId > OKR.id
+
+Ref: productDetails.taskId - Task.id
+
+Ref: KeyResult.okrId > OKR.id
+
+Ref: uxDetails.userJourneyId > UserJourney.id
+
+Ref: uxDetails.userPersonaId > UserPersona.id
+
+Ref: uxDetails.taskId - Task.id
+
+Ref: WorkLog.taskId > Task.id
+
+Ref: WorkLog.userId > users.id
+
+Ref: Comment.authorId > users.id
+
+Ref: Comment.projectId > Project.id
+
+Ref: Timebox.calendarId > Calendar.id
+
+Ref: Timebox.productDetailsId > productDetails.id
+
+Ref: Idea.authorId > users.id
+
+Ref: Idea.userJourneyId > UserJourney.id
+
+Ref: WaitlistEntry.MVPDetailsId > MVPDetails.id
+
+Ref: Positioning.MVPDetailsId > MVPDetails.id
+
+Ref: GoToMarket.MVPDetailsId > MVPDetails.id
+
+Ref: TargetMarket.projectId > Project.id
+
+Ref: LaunchMilestone.MVPDetailsId > MVPDetails.id
+
+Ref: TimeToMarket.MVPDetailsId - MVPDetails.id
+
+Ref: accounts.userId > users.id [delete: Cascade]
+
+Ref: sessions.userId > users.id [delete: Cascade]
+
+Ref: EarlyAdopter.MVPDetailsId > MVPDetails.id
+
+Ref: ValidationMetric.MVPDetailsId > MVPDetails.id

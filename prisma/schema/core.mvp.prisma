@@ -1,0 +1,45 @@
+enum MvpStage {
+  IDEA_VALIDATION
+  MVP_DEFINITION
+  BUILDING
+  TESTING
+  READY_TO_LAUNCH
+  LAUNCHED
+  POST_LAUNCH
+}
+
+model MVPDetails {
+  id        String  @id @default(uuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id])
+
+  stage     MvpStage  @default(IDEA_VALIDATION)
+  startedAt DateTime?
+  notes     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  goToMarkets GoToMarket[] // 💬 How we plan to promote the product 
+  // e.g. "Product Hunt launch", "Email outreach"
+
+  timeToMarket TimeToMarket? // ⏱️ Time taken from idea to live product
+  // e.g. Estimated: 30 days, Actual: 45 days
+
+  validationMetrics ValidationMetric[] // 📊 How we measure success before/after launch
+  // e.g. Goal: 100 signups in 30 days
+
+  positionings Positioning[] // 🧠 What makes our product stand out
+  // e.g. Value: "Fastest way to build MVPs"
+
+  earlyAdopters EarlyAdopter[] // 🧑‍💼 First users who test and give feedback
+  // e.g. "john@example.com" from Twitter
+
+  launchMilestones LaunchMilestone[] // 📆 Key dates/phases for launch
+  // e.g. "Internal testing by June 5"
+
+  waitlistEntries WaitlistEntry[] // 📥 pre-launch signup list , Emails collected before launch
+  // e.g. "demo@abc.com" via Product Hunt
+
+  timeToMarketId String?
+}

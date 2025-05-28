@@ -1,0 +1,103 @@
+model Project {
+  id                String  @id @default(uuid())
+  name              String
+  category          String
+  description       String?
+  gitRepo           String?
+  documentationLink String?
+  hostedLink        String?
+  erdLink           String?
+
+  milestones Milestone[]
+  features   Feature[]
+  comments   Comment[]
+
+  templateId String?
+  template   Template? @relation(fields: [templateId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  targetMarkets TargetMarket[]  // 🎯 Who the product is for
+                             // e.g. "Freelancers", "SaaS startups"
+
+  // objectives         Objective[]       // if OKRs are stored
+
+  MVPDetails MVPDetails?
+}
+
+model Milestone {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      MilestoneStatus @default(OPEN)
+
+  project   Project   @relation(fields: [projectId], references: [id])
+  projectId String
+  features  Feature[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Feature {
+  id     String        @id @default(uuid())
+  title  String
+
+  //replace with okr
+  // what   String
+  // why    String
+  how    String
+  status FeatureStatus @default(OPEN)
+
+  milestone   Milestone @relation(fields: [milestoneId], references: [id])
+  milestoneId String
+  project     Project   @relation(fields: [projectId], references: [id])
+  projectId   String
+  tasks       Task[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Idea      Idea?    @relation(fields: [ideaId], references: [id])
+  ideaId    String?
+}
+enum Role {
+  DEVELOPER
+  MANAGER
+  USER
+}
+enum MilestoneStatus {
+  OPEN
+  COMPLETED
+  CANCELLED
+}
+
+enum FeatureStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+}
+model Template {
+  id               String             @id @default(uuid())
+  type             String
+  description      String?
+  tags             String[]
+  TemplateResource TemplateResource[]
+  guide            String?
+  sampleProjects   Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TemplateResource {
+  id         String    @id @default(uuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Template   Template? @relation(fields: [templateId], references: [id])
+  templateId String?
+  Resource   Resource? @relation(fields: [resourceId], references: [id])
+  resourceId String?
+}
