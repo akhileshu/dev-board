@@ -2,8 +2,8 @@
 
 model EarlyAdopter {
   id         String   @id @default(uuid())
-  MVPDetailsId  String
-  MVPDetails    MVPDetails  @relation(fields: [MVPDetailsId], references: [id])
+  mvpDetailId String
+  mvpDetail   MVPDetail @relation(fields: [mvpDetailId], references: [id])
 
   name       String
   contact    String
@@ -12,8 +12,8 @@ model EarlyAdopter {
 }
 model ValidationMetric {
   id         String         @id @default(uuid())
-  MVPDetailsId  String
-  MVPDetails    MVPDetails  @relation(fields: [MVPDetailsId], references: [id])
+  mvpDetailId String
+  mvpDetail   MVPDetail @relation(fields: [mvpDetailId], references: [id])
 
   goal       String         // e.g. "Get 500 signups"
   metric     String         // e.g. "Signup count"

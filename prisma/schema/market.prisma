@@ -2,8 +2,8 @@
 
 model Positioning {
   id              String   @id @default(uuid())
-  MVPDetailsId  String
-  MVPDetails    MVPDetails  @relation(fields: [MVPDetailsId], references: [id])
+  mvpDetailId String
+  mvpDetail   MVPDetail @relation(fields: [mvpDetailId], references: [id])
 
   valueProp       String
   differentiation String
@@ -13,8 +13,8 @@ model Positioning {
 
 model GoToMarket {
   id         String   @id @default(uuid())
-  MVPDetailsId  String
-  MVPDetails    MVPDetails  @relation(fields: [MVPDetailsId], references: [id])
+  mvpDetailId String
+  mvpDetail   MVPDetail @relation(fields: [mvpDetailId], references: [id])
 
   strategy   String   // e.g. "Product Hunt"
   budget     Float?

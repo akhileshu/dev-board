@@ -2,8 +2,8 @@
 
 model WaitlistEntry {
   id         String   @id @default(uuid())
-  MVPDetailsId  String
-  MVPDetails    MVPDetails  @relation(fields: [MVPDetailsId], references: [id])
+  mvpDetailId String
+  mvpDetail   MVPDetail @relation(fields: [mvpDetailId], references: [id])
 
   email      String
   source     String?  // e.g. "Product Hunt", "Twitter"
