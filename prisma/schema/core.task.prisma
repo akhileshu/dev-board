@@ -8,8 +8,6 @@ enum taskStatus {
   UNDER_REVIEW
   REQUIRES_ITERATION
   DONE
-
-  @@map("SubtaskStatus")
 }
 
 enum OutcomeStatus {
@@ -24,6 +22,7 @@ enum ResourceType {
   VIDEO
   TOOL
   ARTICLE
+  PDF
 }
 
 // /**

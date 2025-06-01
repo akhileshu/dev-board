@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { seedTemplates } from "./templates";
 
 const prisma = new PrismaClient();
 
@@ -8,8 +9,9 @@ const prisma = new PrismaClient();
  */
 async function main() {
   console.log("🌱 Starting seed...");
-//   await seedUsers();
+  //   await seedUsers();
   // await seedProjects(); // Add later
+  await seedTemplates();
   console.log("✅ Seed completed.");
 }
 

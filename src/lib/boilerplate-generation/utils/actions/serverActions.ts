@@ -30,7 +30,7 @@ export const GenerateActionsForServerActions = (
         path: targetPaths.serverActions.serverAction(
           feature.name,
           "custom",
-          customAction.operation
+          customAction
         ),
         templateFile: templatePaths.serverActions.serverActionsCustom,
         data: {

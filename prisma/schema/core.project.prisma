@@ -24,7 +24,7 @@ model Project {
   MVPDetail MVPDetail?
 
   projectTimelines ProjectTimeline[] // [q1,q2,q3]
-  features         Feature[]
+  features         Feature[] // [auth , payments , etc] can evolve into microservices if each feature is functionally independent
 }
 
 model ProjectTimeline {
@@ -45,14 +45,14 @@ model Phase {
   title             String
   start             DateTime
   end               DateTime
-  status            PhaseStatus     @default(PLANNED) // Track phase progress
+  status            WorkStatus      @default(PLANNED) // Track phase progress
   tasks             Task[]
 
   mvpDetailId String? // ✅ Optional because not all phases are MVP-specific
   mvpDetail   MVPDetail? @relation(fields: [mvpDetailId], references: [id])
 }
 
-enum PhaseStatus {
+enum WorkStatus {
   // Status should be updated automatically:
   // - COMPLETED: all tasks done
   // - IN_PROGRESS: any task in progress
@@ -71,7 +71,7 @@ model Feature {
 
   //replace why , what  with okr
   how    String
-  status FeatureStatus @default(OPEN)
+  status WorkStatus @default(PLANNED)
 
   project   Project @relation(fields: [projectId], references: [id])
   projectId String
@@ -89,12 +89,6 @@ enum Role {
   USER
 }
 
-enum FeatureStatus {
-  OPEN
-  IN_PROGRESS
-  COMPLETED
-}
-
 model Template {
   id               String             @id @default(uuid())
   type             String
@@ -103,9 +97,9 @@ model Template {
   TemplateResource TemplateResource[]
   guide            String?
   sampleProjects   Project[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // todo - author of template
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }
 
 model TemplateResource {

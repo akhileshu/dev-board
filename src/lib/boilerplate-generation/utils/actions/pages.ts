@@ -8,29 +8,34 @@ export const GenerateActionsForFeaturePages = (
   actions: ActionType[]
 ) => {
   const { pages } = feature;
-  pages?.forEach((page) => {
-    const pageName = page.replace(/[\/\(\)\[\]]/g, "");
+  pages?.resourceTypes?.forEach((pageResourceType) => {
+    const pageFileNamePattern = `${pages.resourceName}/${
+      pageResourceType === "list"
+        ? ""
+        : pageResourceType === "detail"
+        ? "[id]"
+        : "" // this case is unhandled
+    }`;
     actions.push({
       type: "add",
-      // path: `src/features/${feature.name}/pages${page}/page.tsx`,
-      path: targetPaths.routes.page(page),
+      path: targetPaths.routes.page(pageFileNamePattern),
       templateFile: templatePaths.routes.page,
       data: {
-        name: pageName,
-        components: feature.components,
-        hooks: feature.hooks,
-        store: feature.store,
+        renderAsList: pageResourceType === "list",
+        name: feature.name,
       },
     });
-    actions.push({
-      type: "add",
-      path: `cypress/e2e/${feature.name}/${pageName}.cy.ts`,
-      templateFile: templatePaths.e2e, // define this in your template config
-      data: {
-        featureName: feature.name,
-        pageUrl: page,
-        testName: pageName,
-      },
-    });
+
+    // todo : review e2e tests generation
+    // actions.push({
+    //   type: "add",
+    //   path: `cypress/e2e/${feature.name}/${pageName}.cy.ts`,
+    //   templateFile: templatePaths.e2e, // define this in your template config
+    //   data: {
+    //     featureName: feature.name,
+    //     pageUrl: page,
+    //     testName: pageName,
+    //   },
+    // });
   });
 };

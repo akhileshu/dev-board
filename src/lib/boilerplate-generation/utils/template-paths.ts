@@ -17,9 +17,12 @@ export const templatePaths = {
     serverActionsIndex: t("/server-actions/index.hbs"),
   },
   routes: {
-    page: t("/page-route.hbs"),
+    page: t("/components/page.hbs"),
   },
+
   zodSchema: t("/zod-schema.hbs"),
+  zodSchemaIndex: t("/zod-schema-index.hbs"),
+
   hook: t("/hook.hbs"),
   type: t("/type.hbs"),
   util: t("/util.hbs"),

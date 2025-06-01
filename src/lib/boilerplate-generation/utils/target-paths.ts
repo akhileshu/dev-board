@@ -1,8 +1,16 @@
 import { CRUDOperation } from "../types";
-import { toJoinedKebabCase, toPascalCase } from "./helpers";
+import { toJoinedKebabCase, toKebabCase, toPascalCase } from "./helpers";
 
 const featureBasePath = "src/features";
-const f = (path: string) => `${featureBasePath}${path}`;
+// const f = (path: string) => `${featureBasePath}${path}`;
+export function toKebabPath(...parts: string[]): string {
+  return parts
+    .filter(Boolean)
+    .map((part) => toJoinedKebabCase(part))
+    .join("/");
+}
+
+const f = (...parts: string[]) => `${featureBasePath}/${toKebabPath(...parts)}`;
 
 type FeaturePathParams = {
   feature: string;
@@ -20,9 +28,21 @@ export const targetPaths = {
   /** ex: prismaModel("user") → prisma/models/user.prisma */
   prismaModel: (schemaName: string) => `prisma/models/${schemaName}.prisma`,
 
-  /** ex: schema("video", "videoInput") → src/features/video/schemas/videoInputSchema.ts */
-  schema: ({ feature, name }: FeaturePathParams) =>
-    f(`/${feature}/schemas/${name}Schema.ts`),
+  /** ex: schema("video", "createTemplateSchema") → src/features/video/schemas/createTemplateSchema.ts */
+  schema: ({
+    feature,
+    type,
+    name,
+  }: {
+    feature: string;
+    type: string;
+    name: string;
+  }) => f(`/${feature}/schemas/${toJoinedKebabCase(type, name, "Schema.ts")}`),
+  schemaIndex: ({
+    feature,
+  }: {
+    feature: string;
+  }) => f(`/${feature}/schemas/index.ts`),
 
   /** ex: hook("video", "uploadVideo") → src/features/video/hooks/useUploadVideo.ts */
   hook: ({ feature, name }: FeaturePathParams) =>
@@ -42,22 +62,12 @@ export const targetPaths = {
 
   routes: {
     /** ex: src/app/(with-layout)/video/upload/page.tsx */
-    page: (page: string) => `src/app/(with-layout)/${page}/page.tsx`,
+    // page: (page: string) => `src/app/(with-layout)/${page}/page.tsx`,
+    page: (pageFileNamePattern: string) =>
+      `src/app/(with-layout)/${pageFileNamePattern}/page.tsx`,
   },
 
   components: {
-    /** ex: renderServer({...}, false) → .../user-renderer.tsx | true → .../user-list-renderer.tsx */
-    renderServer: (
-      { featureName, componentName }: ComponentPathParams,
-      renderAsList: boolean
-    ) =>
-      f(
-        `/${featureName}/components/${componentName}/${toJoinedKebabCase(
-          componentName,
-          renderAsList ? "list-renderer" : "renderer"
-        )}.tsx`
-      ),
-
     /** ex: renderClient({...}, false) → .../User-Detail-Card.tsx | true → .../User-List-View.tsx */
     renderClient: (
       { featureName, componentName }: ComponentPathParams,
@@ -98,12 +108,18 @@ export const targetPaths = {
     serverAction: (
       featureName: string,
       type: ServerActionType,
-      operation?: CRUDOperation
+      customAction?: {
+        operation: CRUDOperation;
+        name: string;
+      }
     ) =>
       f(
         `/${featureName}/actions/${toJoinedKebabCase(
-          featureName,
-          type === "custom" ? `${operation}-action` : "crud-actions"
+          type === "custom"
+            ? toKebabCase(
+                customAction?.name || "error_custom-action-name-not-specified"
+              )
+            : `${featureName}-crud-actions`
         )}.tsx`
       ),
 
@@ -117,12 +133,19 @@ export const targetPaths = {
     f(`/${feature}/components/${name}/${name}.test.tsx`),
 };
 
-
-
-
-
-
 /*
+
+    // renderServer: (
+    //   { featureName, componentName }: ComponentPathParams,
+    //   renderAsList: boolean
+    // ) =>
+    //   f(
+    //     `/${featureName}/components/${componentName}/${toJoinedKebabCase(
+    //       componentName,
+    //       renderAsList ? "list-renderer" : "renderer"
+    //     )}.tsx`
+    //   ),
+
   component: (feature: string, name: string) =>
     f(`/${feature}/components/${name}/${name}.tsx`,
 

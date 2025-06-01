@@ -1,4 +1,3 @@
-"use server";
 
 import {
   get{{pascalCase name}}s,
@@ -6,10 +5,10 @@ import {
   create{{pascalCase name}},
   update{{pascalCase name}},
   delete{{pascalCase name}},
-} from "./";
+} from "./{{camelCase name}}-crud-actions";
 
 {{#each customActions}}
-import { {{camelCase name}} } from "./{{camelCase name}}";
+import { {{camelCase name}} } from "./{{kebabCase name}}";
 {{/each}}
 
 export const {{camelCase name}}Actions = {

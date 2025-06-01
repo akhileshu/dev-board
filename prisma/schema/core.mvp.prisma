@@ -13,7 +13,6 @@ model MVPDetail {
   projectId String  @unique
   project   Project @relation(fields: [projectId], references: [id])
 
-  stage     MvpStage  @default(IDEA_VALIDATION)
   startedAt DateTime?
   notes     String?
 
@@ -35,16 +34,19 @@ model MVPDetail {
   earlyAdopters EarlyAdopter[] // 🧑‍💼 First users who test and give feedback
   // e.g. "john@example.com" from Twitter
 
-  // launchMilestones MvpLaunchMilestone[] // 📆 Key dates/phases for launch
-  // e.g. "Internal testing by June 5"
-  // [
-  //    { "title": "Idea Validation", "date": "2025-06-02" },
-  //    { "title": "Core Features Ready", "date": "2025-06-10" },
-  // ]
-
-  // phases Phase[] // Multiple phases like "Validation", "Development", "Launch"
-
+  stage        MvpStage @default(IDEA_VALIDATION)
   launchPhases Phase[]
+  //🧠 Example Mapping
+  // MvpStage = BUILDING
+  // ↳ Phases: Design UI, Set up backend, Integrate APIs
+
+  // MvpStage = TESTING
+  // ↳ Phases: QA, Bug fixing, Beta feedback loop
+
+  // | Term     | Where Used              | Meaning                                                        | Keep? |
+  // | -------- | ----------------------- | -------------------------------------------------------------- | ----- |
+  // | `stage`  | In `MVPDetail`, `Phase` | High-level **phase of progress** like “BUILDING”, “TESTING”    | ✅ Yes |
+  // | `status` | In `Phase`              | Real-time **execution state** like “IN\_PROGRESS”, “COMPLETED” | ✅ Yes |
 
   waitlistEntries WaitlistEntry[] // 📥 pre-launch signup list , Emails collected before launch
   // e.g. "demo@abc.com" via Product Hunt

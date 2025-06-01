@@ -2,6 +2,7 @@ import { ActionType } from "plop";
 import { FeatureConfig } from "../../types";
 import { targetPaths } from "../target-paths";
 import { templatePaths } from "../template-paths";
+import { toCamelCase } from "../helpers";
 
 export const GenerateActionsForFeatureAssets = (
   feature: FeatureConfig,
@@ -17,13 +18,40 @@ export const GenerateActionsForFeatureAssets = (
     prismaSchemas,
   } = feature;
 
-  zodSchemas?.forEach((schemaName) => {
-    actions.push({
-      type: "add",
-      path: targetPaths.schema({feature:featureName, name:schemaName}),
-      templateFile: templatePaths.zodSchema,
-      data: { name: schemaName },
+  zodSchemas?.forEach(({ resourceName, type }) => {
+    type.forEach((schemaType) => {
+      actions.push({
+        type: "add",
+        path: targetPaths.schema({
+          feature: featureName,
+          name: resourceName,
+          type: schemaType,
+        }),
+        templateFile: templatePaths.zodSchema,
+        data: {
+          name: resourceName,
+          type: schemaType,
+        },
+      });
     });
+
+    const flatZodSchemas = zodSchemas?.flatMap(({ resourceName, type }) =>
+      type.map((schemaType) => ({
+        resourceName,
+        type: schemaType,
+      }))
+    );
+    if (flatZodSchemas?.length) {
+      actions.push({
+        type: "add",
+        path: targetPaths.schemaIndex({
+          feature: featureName,
+        }),
+        templateFile: templatePaths.zodSchemaIndex,
+        data: { zodSchemas: flatZodSchemas },
+        force: true, // optional: overwrite if exists
+      });
+    }
   });
 
   hooks?.forEach((hookName) => {

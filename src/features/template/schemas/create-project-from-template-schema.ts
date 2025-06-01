@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-{{!-- createTemplateSchema --}}
-export const {{camelCaseJoin type name "Schema"}} = z.object({
+export const createProjectFromTemplateSchema = z.object({
   // Basic primitive types
   id: z.string().uuid(), // Common for database IDs
   name: z.string().min(1).max(255), // Standard text field with length constraints
@@ -57,4 +56,4 @@ export const {{camelCaseJoin type name "Schema"}} = z.object({
   )
 }).strict(); // Using strict() to prevent unknown properties
 
-export type {{pascalCase name}} = z.infer<typeof {{camelCase name}}>;
+export type ProjectFromTemplate = z.infer<typeof ProjectFromTemplate>;

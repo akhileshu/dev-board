@@ -1,0 +1,3 @@
+{{#each zodSchemas}}
+export { {{camelCaseJoin type resourceName "Schema"}} } from "./{{kebabCaseJoin type resourceName "schema"}}";
+{{/each}}

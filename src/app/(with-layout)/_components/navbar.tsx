@@ -4,7 +4,7 @@ import Auth from "@/lib/auth/components";
 
 import { AppLink } from "@/components/app/link";
 import { HoverDropdown } from "@/components/app/hover-dropdown";
-import SendTestNotificationButton from "@/features/notification/components/SendNotificationButton";
+// import SendTestNotificationButton from "@/features/notification/components/SendNotificationButton";
 
 export default function Navbar() {
   return (
@@ -32,7 +32,7 @@ export default function Navbar() {
         </HoverDropdown>
         
         <AppLink href="/notifications">Notifications</AppLink>
-        <SendTestNotificationButton/>
+        {/* <SendTestNotificationButton/> */}
       </div>
 
       <Auth />

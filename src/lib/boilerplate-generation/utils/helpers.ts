@@ -53,10 +53,26 @@ export function registerHelpers(plop: NodePlopAPI) {
   const safe = <T>(fn: () => T, fallback: T) => {
     try {
       return fn();
-    } catch {
+    } catch (e) {
+      console.log(e);
+      debugger;
       return fallback;
     }
   };
+  /**
+   *
+   * in Handlebars helpers, when using rest parameters (...parts), the last argument is always the Handlebars options object — not an actual string input. So:
+   */
+  // function stripOptions(args: any[]) {
+  //   const last = args[args.length - 1];
+  //   return typeof last === "object" && last !== null && "fn" in last
+  //     ? args.slice(0, -1)
+  //     : args;
+  // }
+  function stringParts(args: any[]) {
+    return args.filter((part) => typeof part === "string" && part.trim() !== "");
+  }
+
 
   plop.setHelper("firstType", (types: string[] | undefined) =>
     safe(() => types?.[0] ?? "any", "__MISSING_firstType")
@@ -104,6 +120,46 @@ export function registerHelpers(plop: NodePlopAPI) {
     safe(
       () => str.replace(/-([a-z])/g, (g) => g[1].toUpperCase()),
       "__ERROR_camelCase"
+    )
+  );
+  plop.setHelper("camelCaseJoin", (...parts: any[]) =>
+    safe(() => {
+      // Remove Handlebars options object if present
+      return stringParts(parts)
+        .filter(Boolean)
+        .map((part: string, index: number) => {
+          const clean = part
+            .toString()
+            .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""))
+            .replace(/^[A-Z]/, (c) => c.toLowerCase());
+          if (index === 0) return clean;
+          return clean.charAt(0).toUpperCase() + clean.slice(1);
+        })
+        .join("");
+    }, "__ERROR_camelCaseJoin")
+  );
+
+  plop.setHelper("kebabCase", (str: string) =>
+    safe(
+      () =>
+        str
+          .replace(/([a-z])([A-Z])/g, "$1-$2") // convert camelCase to kebab-case
+          .replace(/\s+/g, "-") // replace spaces with dashes
+          .replace(/_/g, "-") // replace underscores with dashes
+          .toLowerCase(),
+      "__ERROR_kebabCase"
+    )
+  );
+
+  plop.setHelper("kebabCaseJoin", (...parts: any[]) =>
+    safe(
+      () =>
+        stringParts(parts)
+          .filter(Boolean)
+          .join("-") // Join with hyphens
+          .replace(/([a-z])([A-Z])/g, "$1-$2") // Convert camelCase to kebab-case
+          .toLowerCase(), // Convert to lowercase
+      "__ERROR_kebabCaseJoin"
     )
   );
 

@@ -45,18 +45,18 @@ function addRendering(
   };
 
   actions.push(
-    {
-      type: "add",
-      path: targetPaths.components.renderServer(
-        {
-          featureName: feature.name,
-          componentName: RenderingComponentConfig.name,
-        },
-        data.renderAsList
-      ),
-      templateFile: templatePaths.components.renderServer,
-      data,
-    },
+    // {
+    //   type: "add",
+    //   path: targetPaths.components.renderServer(
+    //     {
+    //       featureName: feature.name,
+    //       componentName: RenderingComponentConfig.name,
+    //     },
+    //     data.renderAsList
+    //   ),
+    //   templateFile: templatePaths.components.renderServer,
+    //   data,
+    // },
     {
       type: "add",
       path: targetPaths.components.renderClient(

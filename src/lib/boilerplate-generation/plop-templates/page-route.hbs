@@ -1,3 +1,4 @@
+{{!-- note : this template is not being used --}}
 import React from 'react';
 {{#if components}}import { {{joinWithComma components}} } from '../../components';{{/if}}
 {{#if hooks}}import { {{hookImports hooks}} } from '../../hooks';{{/if}}
@@ -30,10 +31,3 @@ export default function {{properCase name}}Page({}: {{properCase name}}PageProps
     </div>
   );
 }
-
-// Uncomment if you need server-side props
-// export async function getServerSideProps(context) {
-//   return {
-//     props: {}, // will be passed to the page component as props
-//   };
-// }

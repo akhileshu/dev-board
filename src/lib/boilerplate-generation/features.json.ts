@@ -2,22 +2,19 @@ import { FeatureConfig } from "./types";
 
 export const featuresList: FeatureConfig[] = [
   {
-    name: "video",
+    name: "template",
     components: {
       rendering: [
         {
-          name: "video",
+          name: "template",
           option: {
-            generateTestFile: true,
             isEditableView: true,
-            renderAsList: false,
+            renderAsList: true,
           },
         },
         {
-          name: "videoPlaylist",
+          name: "sampleProject",
           option: {
-            isEditableView: true,
-            generateTestFile: false,
             renderAsList: true,
           },
         },
@@ -25,50 +22,20 @@ export const featuresList: FeatureConfig[] = [
       forms: {
         create: [
           {
-            name: "video",
-            option: {
-              generateTestFile: true,
-            },
+            name: "template",
           },
           {
-            name: "videoPlaylist",
-            option: {
-              generateTestFile: false,
-            },
+            name: "projectFromTemplate",
           },
         ],
         edit: [
           {
-            name: "video",
-            option: {
-              generateTestFile: true,
-            },
+            name: "template",
           },
         ],
         delete: [
           {
-            name: "videoPlaylist",
-            option: {
-              generateTestFile: false,
-            },
-          },
-        ],
-      },
-      ui: {
-        table: [
-          {
-            name: "videoTable",
-            option: {
-              generateTestFile: true,
-            },
-          },
-        ],
-        modal: [
-          {
-            name: "confirmDeleteVideo",
-            option: {
-              generateTestFile: false,
-            },
+            name: "template",
           },
         ],
       },
@@ -76,34 +43,36 @@ export const featuresList: FeatureConfig[] = [
     serverActions: {
       generateCRUD: true,
       custom: [
-        { operation: "read", name: "getTrendingPlaylists" },
-        { operation: "create", name: "clonePlaylist" },
+        { operation: "read", name: "getTemplateSampleProjects" },
+        { operation: "create", name: "createProjectFromTemplate" },
       ],
     },
-    prismaSchemas: ["Video","VideoPlaylist"],
-    zodSchemas: ["video", "videoInput"],
-    hooks: ["uploadVideo", "processStatus"],
-    types: ["Video"],
-    utils: ["formatDuration", "getThumbnail"],
-    constants: ["videoStatus"],
-    pages: ["/video/[id]", "/video/upload", "/video/(analytics)"],
-
-    // below fields are still not generated and tested
-    apiRoutes: ["upload", "process", "get", "delete"],
-    store: "useVideoStore",
-    messages: ["ADD_SUCCESS", "ADD_ERROR", "REMOVE_SUCCESS"],
-    services: ["videoService"], // e.g., for encapsulating business logic
-    permissions: ["canUploadVideo", "canDeleteVideo"], // access control layer
-    layouts: ["VideoLayout"], // for shared page layout (Next.js)
-    providers: ["VideoProvider"], // context/provider (React Context API)
-    tests: {
-      // todo : can add an option field to generate test files with individual sections like components , serveractions , etc
-      components: ["VideoUploadForm.test.tsx"],
-      api: ["upload.test.ts"],
-      utils: ["formatDuration.test.ts"],
+    // zodSchemas: [
+    //   "createTemplateInput",
+    //   "updateTemplateInput",
+    //   "deleteTemplateInput",
+    //   "createProjectFromTemplateInput",
+    // ],
+    zodSchemas: [
+      {
+        resourceName: "template",
+        type: ["create", "delete", "edit"],
+      },
+      {
+        resourceName: "ProjectFromTemplate",
+        type: ["create"],
+      },
+    ],
+    types: ["template", "projectFromTemplate"],
+    constants: ["template", "projectFromTemplate"],
+    // pages: [
+    //   "/templates", // list all templates
+    //   "/templates/[id]", // read , update , delete a particular template , create a project from template
+    // ],
+    pages: {
+      resourceName: "templates",
+      resourceTypes: ["list", "detail"],
     },
-    mockData: ["mockVideoData.ts"], // useful for testing/demo
-    env: ["VIDEO_UPLOAD_URL", "MAX_VIDEO_SIZE_MB"], // env var template entries
-    readme: true, // optionally generate a README.md per feature
   },
 ];
+

@@ -3,7 +3,7 @@
 import { AppCard } from "@/components/app/card";
 import { renderStatusMessage } from "@/components/app/status-message/renderStatusMessage";
 import { cn } from "@/lib/utils";
-import { get{{pascalCase name}}s, get{{pascalCase name}}ById } from "@/features/{{camelCase name}}/actions/{{camelCase name}}Actions";
+import { {{camelCase name}}Actions } from "../../actions";
 
 {{#if isEditableView}}
 import { useEditToggle } from "@/lib/forms-inputs/utils";
@@ -14,7 +14,7 @@ import { Edit{{pascalCase name}}Form } from "./edit-{{camelCase name}}-form";
 
 type {{pascalCase name}}DetailCardProps = {
   className?: string;
-  {{camelCase name}}Result: Awaited<ReturnType<typeof get{{pascalCase name}}ById>>;
+  {{camelCase name}}Result: Awaited<ReturnType<typeof {{camelCase name}}Actions.getById>>;
 };
 
 export function {{pascalCase name}}DetailCard({
@@ -53,9 +53,48 @@ export function {{pascalCase name}}DetailCard({
 }
 
 {{#if renderAsList}}
+
+type {{pascalCase name}}OverviewCardProps = {
+  className?: string;
+  item:unknown;
+};
+
+export function {{pascalCase name}}OverviewCard({
+  item,
+  className,
+}: {{pascalCase name}}OverviewCardProps) {
+  const cardTitle = "{{camelCase name}}";
+
+  const { editing, startEditing, cancelEditing } = useEditToggle();
+
+  return (
+    <AppCard title={cardTitle} className={cn("space-y-2", className)}>
+      {editing ? (
+        //<Edit{{pascalCase name}}Form {{camelCase name}}={data} onCancel={cancelEditing} />
+        <></>
+      ) : (
+        <>
+          <Button disabled={editing} onClick={startEditing}>Edit</Button>
+          <Render{{pascalCase name}} item={item} />
+        </>
+      )}
+    </AppCard>
+  );
+}
+
+type RenderTemplateProps = {
+  item:unknown;
+};
+
+export function RenderTemplate({ item }: RenderTemplateProps) {
+  return (
+   <div>edit this component to display details</div>
+  );
+}
+
 type {{pascalCase name}}ListViewProps = {
   className?: string;
-  {{camelCase name}}sResult: Awaited<ReturnType<typeof get{{pascalCase name}}s>>;
+  {{camelCase name}}sResult: Awaited<ReturnType<typeof {{camelCase name}}Actions.getAll>>;
 };
 
 export function {{pascalCase name}}ListView({
@@ -72,7 +111,10 @@ export function {{pascalCase name}}ListView({
   return (
     <AppCard title={cardTitle} className={cn("space-y-4", className)}>
       {data.map((item) => (
-        <{{pascalCase name}}DetailCard key={item.id} {{camelCase name}}Result={ { ok: true, data: item } } />
+        <{{pascalCase name}}OverviewCard
+          key={item.id}
+          item={item}
+        />
       ))}
     </AppCard>
   );
