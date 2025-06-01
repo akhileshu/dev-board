@@ -55,10 +55,17 @@ export interface FeatureConfig {
   // components?: string[];
   components?: FeatureComponents;
   apiRoutes?: string[];
+
+  // pages?: {
+  //   resourceName: string; //"templates"
+  //   resourceTypes: pageResourceType[];
+  // };
+
   pages?: {
     resourceName: string; //"templates"
-    resourceTypes: pageResourceType[];
+    options: { type: pageResourceType; isEditableView: boolean }[];
   };
+  
   serverActions?: {
     generateCRUD?: boolean;
     custom: {

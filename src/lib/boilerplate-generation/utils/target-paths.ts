@@ -3,7 +3,7 @@ import { toJoinedKebabCase, toKebabCase, toPascalCase } from "./helpers";
 
 const featureBasePath = "src/features";
 // const f = (path: string) => `${featureBasePath}${path}`;
-export function toKebabPath(...parts: string[]): string {
+function toKebabPath(...parts: string[]): string {
   return parts
     .filter(Boolean)
     .map((part) => toJoinedKebabCase(part))
@@ -38,11 +38,8 @@ export const targetPaths = {
     type: string;
     name: string;
   }) => f(`/${feature}/schemas/${toJoinedKebabCase(type, name, "Schema.ts")}`),
-  schemaIndex: ({
-    feature,
-  }: {
-    feature: string;
-  }) => f(`/${feature}/schemas/index.ts`),
+  schemaIndex: ({ feature }: { feature: string }) =>
+    f(`/${feature}/schemas/index.ts`),
 
   /** ex: hook("video", "uploadVideo") → src/features/video/hooks/useUploadVideo.ts */
   hook: ({ feature, name }: FeaturePathParams) =>
@@ -68,15 +65,17 @@ export const targetPaths = {
   },
 
   components: {
-    /** ex: renderClient({...}, false) → .../User-Detail-Card.tsx | true → .../User-List-View.tsx */
-    renderClient: (
+    /**- User-List-View.tsx
+     * - User-Detail-View.tsx
+     *  - ex: renderClient({...}, false) → .../User-Detail-Card.tsx | true → .../User-List-View.tsx */
+    view: (
       { featureName, componentName }: ComponentPathParams,
       renderAsList: boolean
     ) =>
       f(
         `/${featureName}/components/${componentName}/${toJoinedKebabCase(
           componentName,
-          renderAsList ? "List-View" : "Detail-Card"
+          renderAsList ? "List-View" : "Detail-View"
         )}.tsx`
       ),
 

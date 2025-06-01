@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/lib/forms-inputs/button";
+import { Button } from "@/lib/form-and-inputs/button";
 import { AppLink } from "@/components/app/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -12,7 +12,12 @@ export default function Auth() {
     <div>
       {session ? (
         <div className="flex gap-1 items-center">
-          <AppLink title="my profile"  disableTransition disableUnderline href={"/profile"}>
+          <AppLink
+            title="my profile"
+            disableTransition
+            disableUnderline
+            href={"/profile"}
+          >
             <Image
               alt="user-img"
               src={session.user.image}

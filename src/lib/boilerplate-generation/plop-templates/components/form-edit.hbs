@@ -1,12 +1,12 @@
 "use client";
 
 import { AppCard } from "@/components/app/card";
-import { renderStatusMessage } from "@/components/app/status-message/renderStatusMessage";
-import { Button } from "@/lib/forms-inputs/button";
-import AppForm from "@/lib/forms-inputs/form";
-import { useHandleFormState } from "@/lib/forms-inputs/useHandleFormState";
+import { Button } from "@/lib/form-and-inputs/button";
+import AppForm from "@/lib/form-and-inputs/form";
+import { useHandleFormState } from "@/lib/form-and-inputs/useHandleFormState";
 import { initialState } from "@/lib/server-actions/handleAction";
 import { useActionState, useEffect } from "react";
+import { {{camelCase name}}Actions } from "../../actions";
 
 type Edit{{pascalCase name}}FormProps = {
   {{camelCase name}}: any;
@@ -15,7 +15,7 @@ type Edit{{pascalCase name}}FormProps = {
 
 export function Edit{{pascalCase name}}Form({ {{camelCase name}}, onCancel }: Edit{{pascalCase name}}FormProps) {
   const [state, formAction, isPending] = useActionState(
-    placeholderActionFn,
+    {{camelCase name}}Actions.update,
     initialState
   );
   const { fieldErrors } = state ?? {};

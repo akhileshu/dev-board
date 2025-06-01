@@ -4,7 +4,7 @@ import { AppCard } from "@/components/app/card";
 import { useActionState } from "react";
 import { initialState } from "@/lib/server-actions/handleAction";
 import AppForm from "@/lib/forms-inputs/form";
-import { useHandleFormState } from "@/lib/forms-inputs/useHandleFormState";
+import { useHandleFormState } from "@/lib/form-and-inputs/useHandleFormState";
 
 export function Create{{pascalCase name}}Form() {
   const [state, formAction, isPending] = useActionState(placeholderCreateAction, initialState);

@@ -2,7 +2,8 @@ import { cn } from "@/lib/utils";
 
 import { templateActions } from "@/features/template/actions";
 
-import { TemplateListView ,TemplateDetailCard } from "@/features/template/components/template/template-list-view";
+import { TemplateListView  } from "@/features/template/components/template/template-list-view";
+import { TemplateDetailView } from "@/features/template/components/template/template-detail-view";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -13,13 +14,13 @@ export default async function templates({
   params,
   searchParams,
 }: PageProps) {
-  //const { slug } = await params;
+  const { id } = await params;
   //const filters = (await searchParams).filters;
 
   // Render Single Template
-    const templateResult = await templateActions.getById();
+    const templateResult = await templateActions.getById(id);
 
   return (
-    <TemplateDetailCard templateResult={ templateResult } className={cn("")} />
+    <TemplateDetailView templateResult={ templateResult } className={cn("")} />
   );
 }

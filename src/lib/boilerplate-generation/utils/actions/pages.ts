@@ -8,34 +8,48 @@ export const GenerateActionsForFeaturePages = (
   actions: ActionType[]
 ) => {
   const { pages } = feature;
-  pages?.resourceTypes?.forEach((pageResourceType) => {
+  pages?.options?.forEach((option) => {
     const pageFileNamePattern = `${pages.resourceName}/${
-      pageResourceType === "list"
-        ? ""
-        : pageResourceType === "detail"
-        ? "[id]"
-        : "" // this case is unhandled
+      option.type === "list" ? "" : option.type === "detail" ? "[id]" : "" // fallback for unknown types
     }`;
+
     actions.push({
       type: "add",
       path: targetPaths.routes.page(pageFileNamePattern),
       templateFile: templatePaths.routes.page,
       data: {
-        renderAsList: pageResourceType === "list",
+        renderAsList: option.type === "list",
         name: feature.name,
       },
     });
-
-    // todo : review e2e tests generation
-    // actions.push({
-    //   type: "add",
-    //   path: `cypress/e2e/${feature.name}/${pageName}.cy.ts`,
-    //   templateFile: templatePaths.e2e, // define this in your template config
-    //   data: {
-    //     featureName: feature.name,
-    //     pageUrl: page,
-    //     testName: pageName,
-    //   },
-    // });
+    // supporting components for page routes
+    actions.push({
+      type: "add",
+      path: targetPaths.components.view(
+        {
+          featureName: feature.name,
+          componentName: feature.name,
+        },
+        option.type === "list"
+      ),
+      templateFile: templatePaths.components.view(option.type === "list"),
+      data: {
+        name: feature.name,
+        isEditableView: option.isEditableView,
+        renderAsList: option.type === "list",
+      },
+    });
   });
 };
+
+// todo : review e2e tests generation
+// actions.push({
+//   type: "add",
+//   path: `cypress/e2e/${feature.name}/${pageName}.cy.ts`,
+//   templateFile: templatePaths.e2e, // define this in your template config
+//   data: {
+//     featureName: feature.name,
+//     pageUrl: page,
+//     testName: pageName,
+//   },
+// });

@@ -1,24 +1,28 @@
 "use server";
 
-import {
-  FetchResponse,
+import {   FetchResponse,
   MutateResponse,
+  fetchError,
+  fetchErrorNotLoggedIn,
   fetchSuccess,
   handleFetchAction,
   handleMutateAction,
   mutateError,
   mutateErrorNotLoggedIn,
   mutateSuccess,
-  parseFormData
-} from "@/lib/server-actions/handleAction";
+  parseFormData,  } from "@/lib/server-actions/handleAction";
 
 
 import { getServerUser } from "@/lib/auth/lib";
 import { myPrisma } from "@/lib/db/prisma";
 import { getMessage } from "@/lib/message/lib/get-message";
 
-import { createTemplateSchema, deleteTemplateSchema, editTemplateSchema } from "../schemas";
+import { createTemplateSchema, editTemplateSchema, deleteTemplateSchema } from "../schemas";
 
+import {
+  checkLimit,
+  incrementLimit,
+} from "../../../lib/limit-db-writes/limitHandler";
 import { Template } from "@prisma/client";
 
 export async function getTemplates(): Promise<FetchResponse<Template[]>> {
@@ -28,7 +32,7 @@ export async function getTemplates(): Promise<FetchResponse<Template[]>> {
   });
 }
 
-export async function getTemplateById(id: string): Promise<FetchResponse<unknown>> {
+export async function getTemplateById(id: string): Promise<FetchResponse<Template>> {
   return handleFetchAction(async () => {
     const template = await myPrisma.template.findUnique({
       where: { id },

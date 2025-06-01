@@ -4,7 +4,8 @@ const t = (path: string) => `${templateBasePath}/${path}`;
 export const templatePaths = {
   components: {
     renderServer: t("/components/render-server.hbs"),
-    renderClient: t("/components/render-client.hbs"),
+    // renderClient: t("/components/render-client.hbs"),
+    view: (renderAsList: boolean) => (renderAsList ? t("/components/list-view.hbs") : t("/components/detail-view.hbs")),
     formCreate: t("/components/form-create.hbs"),
     formEdit: t("/components/form-edit.hbs"),
     formDelete: t("/components/form-delete.hbs"),

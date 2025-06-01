@@ -6,13 +6,6 @@ export const featuresList: FeatureConfig[] = [
     components: {
       rendering: [
         {
-          name: "template",
-          option: {
-            isEditableView: true,
-            renderAsList: true,
-          },
-        },
-        {
           name: "sampleProject",
           option: {
             renderAsList: true,
@@ -71,7 +64,10 @@ export const featuresList: FeatureConfig[] = [
     // ],
     pages: {
       resourceName: "templates",
-      resourceTypes: ["list", "detail"],
+      options: [
+        { type: "list", isEditableView: false },
+        { type: "detail", isEditableView: true },
+      ],
     },
   },
 ];

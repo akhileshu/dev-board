@@ -4,119 +4,26 @@ import { AppCard } from "@/components/app/card";
 import { renderStatusMessage } from "@/components/app/status-message/renderStatusMessage";
 import { cn } from "@/lib/utils";
 import { templateActions } from "../../actions";
-
-import { useEditToggle } from "@/lib/forms-inputs/utils";
-import { Button } from "@/lib/forms-inputs/button";
-import { EditTemplateForm } from "./edit-template-form";
+import Link from "next/link";
+import { Button } from "@/lib/form-and-inputs/button";
 import { Template } from "@prisma/client";
 
-/*
-type TemplateDetailCardProps = {
-  className?: string;
-  templateResult: Awaited<ReturnType<typeof templateActions.getById>>;
+type TemplateMinimalInfoProps = {
+  template:Template;
 };
-
-export function TemplateDetailCard({
-  templateResult,
-  className,
-}: TemplateDetailCardProps) {
-  const cardTitle = "Template";
-
-  const { editing, startEditing, cancelEditing } = useEditToggle();
-  const statusMessage = renderStatusMessage(templateResult, cardTitle);
-  if (statusMessage || !templateResult.ok) return statusMessage;
-
-  const { data } = templateResult;
-
-
+function TemplateMinimalInfo({ template }: TemplateMinimalInfoProps) {
   return (
-    <AppCard title={cardTitle} className={cn("space-y-2", className)}>
-      {editing ? (
-        <EditTemplateForm template={data} onCancel={cancelEditing} />
-      ) : (
-        <>
-          <Button disabled={editing} onClick={startEditing}>Edit</Button>
-          <RenderTemplate template={data} />
-        </>
-      )}
-    </AppCard>
-  );
-}
-*/
-
-type TemplateOverviewCardProps = {
-  className?: string;
-  template: Template;
-};
-
-export function TemplateOverviewCard({
-  template,
-  className,
-}: TemplateOverviewCardProps) {
-  const cardTitle = "template";
-
-  const { editing, startEditing, cancelEditing } = useEditToggle();
-
-  return (
-    <AppCard title={cardTitle} className={cn("space-y-2", className)}>
-      {editing ? (
-        //<EditTemplateForm template={data} onCancel={cancelEditing} />
-        <></>
-      ) : (
-        <>
-          <Button disabled={editing} onClick={startEditing}>
-            Edit
-          </Button>
-          <RenderTemplate template={template} />
-        </>
-      )}
-    </AppCard>
-  );
-}
-
-type RenderTemplateProps = {
-  template: Template;
-};
-
-export function RenderTemplate({ template }: RenderTemplateProps) {
-  return (
-    <div className="space-y-2 text-sm">
-      <div>
-        <strong>Type:</strong> {template.type}
-      </div>
-      {template.description && (
-        <div>
-          <strong>Description:</strong> {template.description}
+    <Link key={template.id} href={`/templates/${template.id}`}>
+      <div className="p-4 border rounded hover:bg-gray-50 transition cursor-pointer space-y-1">
+        <div className="font-semibold">{template.type}</div>
+        <div className="text-sm text-gray-600 line-clamp-1">
+          {template.description}
         </div>
-      )}
-      {template.guide && (
-        <div>
-          <strong>Guide:</strong>{" "}
-          <a
-            href={template.guide}
-            className="text-blue-600 underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View Guide
-          </a>
+        <div className="text-xs text-gray-500">
+          Updated: {template.updatedAt.toLocaleDateString()}
         </div>
-      )}
-      {template.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          <strong className="w-full">Tags:</strong>
-          {template.tags.map((tag) => (
-            <span key={tag}>{tag}</span>
-          ))}
-        </div>
-      )}
-      <div>
-        <strong>Created:</strong> {template.createdAt.toLocaleDateString()}
       </div>
-      <div>
-        <strong>Updated:</strong> {template.updatedAt.toLocaleDateString()}
-      </div>
-    </div>
+    </Link>
   );
 }
 
@@ -124,7 +31,6 @@ type TemplateListViewProps = {
   className?: string;
   templatesResult: Awaited<ReturnType<typeof templateActions.getAll>>;
 };
-
 export function TemplateListView({
   templatesResult,
   className,
@@ -138,8 +44,11 @@ export function TemplateListView({
 
   return (
     <AppCard title={cardTitle} className={cn("space-y-4", className)}>
+      <Button className="" disabled={false} onClick={()=>null} >
+        create template
+      </Button>
       {data.map((item) => (
-        <TemplateOverviewCard key={item.id} template={item} />
+        <TemplateMinimalInfo key={item.id} template={item} />
       ))}
     </AppCard>
   );

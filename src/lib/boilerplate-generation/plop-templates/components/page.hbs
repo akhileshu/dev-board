@@ -2,7 +2,8 @@ import { cn } from "@/lib/utils";
 
 import { {{camelCase name}}Actions } from "@/features/{{camelCase name}}/actions";
 
-import { {{pascalCase name}}ListView ,{{pascalCase name}}DetailCard } from "@/features/{{kebabCase name}}/components/{{kebabCase name}}/{{kebabCaseJoin name "listView"}}";
+import { {{pascalCase name}}ListView  } from "@/features/{{kebabCase name}}/components/{{kebabCase name}}/{{kebabCaseJoin name "listView"}}";
+import { {{pascalCase name}}DetailView } from "@/features/{{kebabCase name}}/components/{{kebabCase name}}/{{kebabCaseJoin name "DetailView"}}";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -29,7 +30,7 @@ export default async function {{#if renderAsList}}{{camelCase name}}{{else}}{{ca
     const {{camelCase name}}Result = await {{camelCase name}}Actions.getById();
 
   return (
-    <{{pascalCase name}}DetailCard {{camelCase name}}Result={ {{camelCase name}}Result } className={cn("")} />
+    <{{pascalCase name}}DetailView {{camelCase name}}Result={ {{camelCase name}}Result } className={cn("")} />
   );
   {{/if}}
 }

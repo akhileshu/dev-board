@@ -1,12 +1,13 @@
 "use client";
 
 import { AppCard } from "@/components/app/card";
-import { renderStatusMessage } from "@/components/app/status-message/renderStatusMessage";
-import { Button } from "@/lib/forms-inputs/button";
-import AppForm from "@/lib/forms-inputs/form";
-import { useHandleFormState } from "@/lib/forms-inputs/useHandleFormState";
+import { Button } from "@/lib/form-and-inputs/button";
+import AppForm from "@/lib/form-and-inputs/form";
+
 import { initialState } from "@/lib/server-actions/handleAction";
 import { useActionState, useEffect } from "react";
+import { templateActions } from "../../actions";
+import { useHandleFormState } from "@/lib/form-and-inputs/useHandleFormState";
 
 type EditTemplateFormProps = {
   template: any;
@@ -15,7 +16,7 @@ type EditTemplateFormProps = {
 
 export function EditTemplateForm({ template, onCancel }: EditTemplateFormProps) {
   const [state, formAction, isPending] = useActionState(
-    placeholderActionFn,
+    templateActions.update,
     initialState
   );
   const { fieldErrors } = state ?? {};

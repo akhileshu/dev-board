@@ -4,69 +4,19 @@ import { AppCard } from "@/components/app/card";
 import { renderStatusMessage } from "@/components/app/status-message/renderStatusMessage";
 import { cn } from "@/lib/utils";
 import { sampleProjectActions } from "../../actions";
+import Link from "next/link";
+import { Button } from "@/lib/form-and-inputs/button";
 
-
-
-type SampleProjectDetailCardProps = {
-  className?: string;
-  sampleProjectResult: Awaited<ReturnType<typeof sampleProjectActions.getById>>;
+type SampleProjectMinimalInfoProps = {
+  sampleProject:unknown;
 };
-
-export function SampleProjectDetailCard({
-  sampleProjectResult,
-  className,
-}: SampleProjectDetailCardProps) {
-  const cardTitle = "SampleProject";
-
-  const { editing, startEditing, cancelEditing } = useEditToggle();
-  const statusMessage = renderStatusMessage(sampleProjectResult, cardTitle);
-  if (statusMessage || !sampleProjectResult.ok) return statusMessage;
-
-  const { data } = sampleProjectResult;
-
+function SampleProjectMinimalInfo({ sampleProject }: SampleProjectMinimalInfoProps) {
   return (
-    <AppCard title={cardTitle} className={cn("space-y-2", className)}>
-      <RenderSampleProject sampleProject={data} />
-    </AppCard>
-  );
-}
-
-
-type SampleProjectOverviewCardProps = {
-  className?: string;
-  item:unknown;
-};
-
-export function SampleProjectOverviewCard({
-  item,
-  className,
-}: SampleProjectOverviewCardProps) {
-  const cardTitle = "sampleProject";
-
-  const { editing, startEditing, cancelEditing } = useEditToggle();
-
-  return (
-    <AppCard title={cardTitle} className={cn("space-y-2", className)}>
-      {editing ? (
-        //<EditSampleProjectForm sampleProject={data} onCancel={cancelEditing} />
-        <></>
-      ) : (
-        <>
-          <Button disabled={editing} onClick={startEditing}>Edit</Button>
-          <RenderSampleProject item={data} />
-        </>
-      )}
-    </AppCard>
-  );
-}
-
-type RenderTemplateProps = {
-  item:unknown;
-};
-
-export function RenderTemplate({ item }: RenderTemplateProps) {
-  return (
-   <div>edit this component to display details</div>
+    <Link key={ SampleProject.id} href={`/sampleProjects/${ SampleProject.id}`}>
+      <div className="p-4 border rounded hover:bg-gray-50 transition cursor-pointer space-y-1">
+        update boilerplate here
+      </div>
+    </Link>
   );
 }
 
@@ -74,7 +24,6 @@ type SampleProjectListViewProps = {
   className?: string;
   sampleProjectsResult: Awaited<ReturnType<typeof sampleProjectActions.getAll>>;
 };
-
 export function SampleProjectListView({
   sampleProjectsResult,
   className,
@@ -88,11 +37,11 @@ export function SampleProjectListView({
 
   return (
     <AppCard title={cardTitle} className={cn("space-y-4", className)}>
+      <Button className="" disabled={false} onClick={} >
+        create sampleProject
+      </Button>
       {data.map((item) => (
-        <SampleProjectOverviewCard
-          key={item.id}
-          item={item}
-        />
+        <SampleProjectMinimalInfo key={item.id} sampleProject={item} />
       ))}
     </AppCard>
   );

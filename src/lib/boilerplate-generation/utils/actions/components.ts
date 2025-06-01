@@ -59,17 +59,18 @@ function addRendering(
     // },
     {
       type: "add",
-      path: targetPaths.components.renderClient(
+      path: targetPaths.components.view(
         {
           featureName: feature.name,
           componentName: RenderingComponentConfig.name,
         },
         data.renderAsList
       ),
-      templateFile: templatePaths.components.renderClient,
+      templateFile: templatePaths.components.view(data.renderAsList),
       data,
     }
   );
+
 
   if (RenderingComponentConfig.option?.generateTestFile) {
     actions.push({
