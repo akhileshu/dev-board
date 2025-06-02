@@ -2,7 +2,6 @@ import { ActionType } from "plop";
 import { FeatureConfig } from "../../types";
 import { targetPaths } from "../target-paths";
 import { templatePaths } from "../template-paths";
-import { toCamelCase } from "../helpers";
 
 export const GenerateActionsForFeatureAssets = (
   feature: FeatureConfig,

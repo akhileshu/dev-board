@@ -4,8 +4,11 @@ const t = (path: string) => `${templateBasePath}/${path}`;
 export const templatePaths = {
   components: {
     renderServer: t("/components/render-server.hbs"),
-    // renderClient: t("/components/render-client.hbs"),
-    view: (renderAsList: boolean) => (renderAsList ? t("/components/list-view.hbs") : t("/components/detail-view.hbs")),
+    view: (renderAsList: boolean) =>
+      renderAsList
+        ? t("/components/list-view.hbs")
+        : t("/components/detail-view.hbs"),
+    page: t("/components/page.hbs"),
     formCreate: t("/components/form-create.hbs"),
     formEdit: t("/components/form-edit.hbs"),
     formDelete: t("/components/form-delete.hbs"),
@@ -17,10 +20,6 @@ export const templatePaths = {
     serverActionsCustom: t("/server-actions/serverActionsCustom.hbs"),
     serverActionsIndex: t("/server-actions/index.hbs"),
   },
-  routes: {
-    page: t("/components/page.hbs"),
-  },
-
   zodSchema: t("/zod-schema.hbs"),
   zodSchemaIndex: t("/zod-schema-index.hbs"),
 
@@ -29,14 +28,4 @@ export const templatePaths = {
   util: t("/util.hbs"),
   constant: t("/constant.hbs"),
   prismaModel: t("/prisma-model.hbs"),
-
-  // untested
-  apiTest: t("/api-test.hbs"),
-  service: t("/service.hbs"),
-  componentTest: t("/component-test.hbs"),
-  apiRoute: t("/api-route.hbs"),
-  index: t("/index.hbs"),
-  store: t("/store.hbs"),
-  component: t("/component.hbs"),
-  e2e: t("/e2e-test.hbs"),
 };

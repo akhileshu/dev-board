@@ -8,9 +8,9 @@ import {
   UIType,
   uiTypes,
 } from "../../types";
-import { toPascalCase } from "../helpers";
 import { templatePaths } from "../template-paths";
 import { targetPaths } from "../target-paths";
+import { stringHelpers } from "../helpers";
 
 export const GenerateActionsForFeatureComponents = (
   feature: FeatureConfig,
@@ -34,53 +34,54 @@ export const GenerateActionsForFeatureComponents = (
 };
 
 function addRendering(
-  RenderingComponentConfig: RenderingComponentConfig,
+  config: RenderingComponentConfig,
   feature: FeatureConfig,
   actions: ActionType[]
 ) {
+  const { isPage, name, type, isEditable, restResourceName } = config;
+
+  const isList = type === "list";
+  const isDetail = type === "detail";
+
   const data = {
-    name: RenderingComponentConfig.name,
-    isEditableView: RenderingComponentConfig.option?.isEditableView ?? false,
-    renderAsList: RenderingComponentConfig.option?.renderAsList ?? false,
+    name,
+    isEditableView: isEditable,
+    renderAsList: isList,
   };
 
-  actions.push(
-    // {
-    //   type: "add",
-    //   path: targetPaths.components.renderServer(
-    //     {
-    //       featureName: feature.name,
-    //       componentName: RenderingComponentConfig.name,
-    //     },
-    //     data.renderAsList
-    //   ),
-    //   templateFile: templatePaths.components.renderServer,
-    //   data,
-    // },
-    {
-      type: "add",
-      path: targetPaths.components.view(
-        {
-          featureName: feature.name,
-          componentName: RenderingComponentConfig.name,
-        },
-        data.renderAsList
-      ),
-      templateFile: templatePaths.components.view(data.renderAsList),
-      data,
-    }
-  );
-
-
-  if (RenderingComponentConfig.option?.generateTestFile) {
+  function addAction(path: string,templateFile: string) {
     actions.push({
       type: "add",
-      path: `src/features/${feature.name}/components/${RenderingComponentConfig.name}/__tests__/${RenderingComponentConfig.name}.test.tsx`,
-      templateFile: templatePaths.componentTest,
+      path,
+      templateFile,
       data,
     });
   }
+
+  const componentTargetPath = targetPaths.components.view(
+    { featureName: feature.name, componentName: name },
+    isList
+  );
+  const componentTemplatePath = templatePaths.components.view(isList);
+  const pageTemplatePath = templatePaths.components.page;
+  let pageTargetPath: string;
+
+  if (isPage) {
+    const pageSegment = isList ? "" : isDetail ? "[id]" : ""; // fallback handled
+    const pagePathSegment = `${restResourceName ?? name}/${pageSegment}`;
+    pageTargetPath = targetPaths.components.page(pagePathSegment);
+
+    // Add page route file
+    addAction(pageTargetPath, pageTemplatePath);
+
+    // Add supporting component
+    addAction(componentTargetPath, componentTemplatePath);
+  } else {
+    // Component only
+    addAction(componentTargetPath, componentTemplatePath);
+  }
 }
+
 
 function addForm(
   formComponentConfig: ComponentConfig,
@@ -96,18 +97,11 @@ function addForm(
       { featureName: feature.name, componentName: formComponentConfig.name },
       formType
     ),
-    templateFile: getTemplateFilePath(`form${toPascalCase(formType)}`),
+    templateFile: getTemplateFilePath(
+      `form${stringHelpers.toPascalCase(formType)}`
+    ),
     data,
   });
-
-  if (formComponentConfig.option?.generateTestFile) {
-    actions.push({
-      type: "add",
-      path: `src/features/${feature.name}/components/${formComponentConfig.name}/__tests__/${formType}.test.tsx`,
-      templateFile: templatePaths.componentTest,
-      data,
-    });
-  }
 }
 
 function addUI(
@@ -124,18 +118,11 @@ function addUI(
       { featureName: feature.name, componentName: UIComponentConfig.name },
       uiType
     ),
-    templateFile: getTemplateFilePath(`ui${toPascalCase(uiType)}`),
+    templateFile: getTemplateFilePath(
+      `ui${stringHelpers.toPascalCase(uiType)}`
+    ),
     data,
   });
-
-  if (UIComponentConfig.option?.generateTestFile) {
-    actions.push({
-      type: "add",
-      path: `src/features/${feature.name}/components/${UIComponentConfig.name}/__tests__/${uiType}.test.tsx`,
-      templateFile: templatePaths.componentTest,
-      data,
-    });
-  }
 }
 
 function getTemplateFilePath(key: string) {
@@ -148,3 +135,4 @@ function getTemplateFilePath(key: string) {
   }
   return templateFilePath;
 }
+

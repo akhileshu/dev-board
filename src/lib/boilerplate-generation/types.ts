@@ -1,31 +1,19 @@
-/*
-export interface FeatureConfig {
-  name: string;
-  components: string[];
-  apiRoutes?: string[];
-  serverActions: string[];
-  dbModel: string[];
-  zodSchemas: string[];
-  hooks: string[];
-  types: string[];
-  store: string;
-  utils: string[];
-  constants: string[];
-  messages: string[];
-  pages: string[];
-}
-*/
+
 
 import { Answers } from "inquirer";
 
+export type pageResourceType =
+  | "list" /* /templates */
+  | "detail" /* /templates/id */;
+
 export type RenderingComponentConfig = {
-  name: string;
-  option?: {
-    generateTestFile?: boolean;
-    isEditableView?: boolean;
-    renderAsList?: boolean; // true = render list (of detail cards), false/undefined = render detail card
-  };
+  name: string; //"template"
+  isPage: boolean; //true
+  restResourceName?: string; //"templates"
+  type: pageResourceType; //"list"
+  isEditable?: boolean; //true
 };
+
 export type ComponentConfig = {
   name: string;
   option?: {
@@ -45,27 +33,13 @@ type FeatureComponents = {
   ui?: Partial<Record<UIType, ComponentConfig[]>>;
 };
 
-export type pageResourceType =
-  | "list" /* /templates */
-  | "detail" /* /templates/id */;
+
 
 export type CRUDOperation = "create" | "read" | "update" | "delete";
 export interface FeatureConfig {
   name: string;
-  // components?: string[];
   components?: FeatureComponents;
-  apiRoutes?: string[];
 
-  // pages?: {
-  //   resourceName: string; //"templates"
-  //   resourceTypes: pageResourceType[];
-  // };
-
-  pages?: {
-    resourceName: string; //"templates"
-    options: { type: pageResourceType; isEditableView: boolean }[];
-  };
-  
   serverActions?: {
     generateCRUD?: boolean;
     custom: {
@@ -74,7 +48,6 @@ export interface FeatureConfig {
     }[];
   };
   prismaSchemas?: string[];
-  // zodSchemas?: string[];
   zodSchemas?: {
     resourceName: string;
     type: zodSchemaType[];
@@ -84,9 +57,9 @@ export interface FeatureConfig {
   utils?: string[];
   constants?: string[];
 
+  /*
   store?: string;
   messages?: string[];
-
   services?: string[];
   permissions?: string[];
   layouts?: string[];
@@ -99,6 +72,8 @@ export interface FeatureConfig {
   mockData?: string[];
   env?: string[];
   readme?: boolean;
+  apiRoutes?: string[];
+  */
 }
 
 export interface PlopData extends Answers {
@@ -108,6 +83,70 @@ export interface PlopData extends Answers {
 
 // // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // const exampleFeaturesList: FeatureConfig[] = [
+
+// {
+//   name: "template",
+//   components: {
+//     rendering: [
+//       {
+//         name: "sampleProject",
+//         option: {
+//           renderAsList: true,
+//           isEditableView: true,
+//         },
+//       },
+//     ],
+//     forms: {
+//       create: [
+//         {
+//           name: "template",
+//         },
+//         {
+//           name: "projectFromTemplate",
+//         },
+//       ],
+//       edit: [
+//         {
+//           name: "template",
+//         },
+//       ],
+//       delete: [
+//         {
+//           name: "template",
+//         },
+//       ],
+//     },
+//   },
+//   serverActions: {
+//     generateCRUD: true,
+//     custom: [
+//       { operation: "read", name: "getTemplateSampleProjects" },
+//       { operation: "create", name: "createProjectFromTemplate" },
+//     ],
+//   },
+
+//   zodSchemas: [
+//     {
+//       resourceName: "template",
+//       type: ["create", "delete", "edit"],
+//     },
+//     {
+//       resourceName: "ProjectFromTemplate",
+//       type: ["create"],
+//     },
+//   ],
+//   types: ["template", "projectFromTemplate"],
+//   constants: ["template", "projectFromTemplate"],
+//   pages: {
+//     resourceName: "templates",
+//     options: [
+//       { type: "list", isEditableView: false },
+//       { type: "detail", isEditableView: true },
+//     ],
+//   },
+// },
+
+
 //   {
 //     name: "video",
 //     components: {

@@ -1,12 +1,12 @@
 import { CRUDOperation } from "../types";
-import { toJoinedKebabCase, toKebabCase, toPascalCase } from "./helpers";
+import { stringHelpers } from "./helpers";
 
 const featureBasePath = "src/features";
 // const f = (path: string) => `${featureBasePath}${path}`;
 function toKebabPath(...parts: string[]): string {
   return parts
     .filter(Boolean)
-    .map((part) => toJoinedKebabCase(part))
+    .map((part) => stringHelpers.kebabCaseJoin(part))
     .join("/");
 }
 
@@ -37,13 +37,20 @@ export const targetPaths = {
     feature: string;
     type: string;
     name: string;
-  }) => f(`/${feature}/schemas/${toJoinedKebabCase(type, name, "Schema.ts")}`),
+  }) =>
+    f(
+      `/${feature}/schemas/${stringHelpers.kebabCaseJoin(
+        type,
+        name,
+        "Schema.ts"
+      )}`
+    ),
   schemaIndex: ({ feature }: { feature: string }) =>
     f(`/${feature}/schemas/index.ts`),
 
   /** ex: hook("video", "uploadVideo") → src/features/video/hooks/useUploadVideo.ts */
   hook: ({ feature, name }: FeaturePathParams) =>
-    f(`/${feature}/hooks/use${toPascalCase(name)}.ts`),
+    f(`/${feature}/hooks/use${stringHelpers.toPascalCase(name)}.ts`),
 
   /** ex: type("video", "video") → src/features/video/types/videoTypes.ts */
   type: ({ feature, name }: FeaturePathParams) =>
@@ -57,13 +64,6 @@ export const targetPaths = {
   constant: ({ feature, name }: FeaturePathParams) =>
     f(`/${feature}/constants/${name}.ts`),
 
-  routes: {
-    /** ex: src/app/(with-layout)/video/upload/page.tsx */
-    // page: (page: string) => `src/app/(with-layout)/${page}/page.tsx`,
-    page: (pageFileNamePattern: string) =>
-      `src/app/(with-layout)/${pageFileNamePattern}/page.tsx`,
-  },
-
   components: {
     /**- User-List-View.tsx
      * - User-Detail-View.tsx
@@ -73,11 +73,16 @@ export const targetPaths = {
       renderAsList: boolean
     ) =>
       f(
-        `/${featureName}/components/${componentName}/${toJoinedKebabCase(
+        `/${featureName}/components/${componentName}/${stringHelpers.kebabCaseJoin(
           componentName,
           renderAsList ? "List-View" : "Detail-View"
         )}.tsx`
-      ),
+      ),  
+
+    /** ex: src/app/(with-layout)/video/upload/page.tsx */
+    // page: (page: string) => `src/app/(with-layout)/${page}/page.tsx`,
+    page: (pageFileNamePattern: string) =>
+      `src/app/(with-layout)/${pageFileNamePattern}/page.tsx`,
 
     /** ex: form({...}, "edit") → .../edit-user-form.tsx */
     form: (
@@ -85,7 +90,7 @@ export const targetPaths = {
       formType: string
     ) =>
       f(
-        `/${featureName}/components/${componentName}/${toJoinedKebabCase(
+        `/${featureName}/components/${componentName}/${stringHelpers.kebabCaseJoin(
           formType,
           componentName,
           "form"
@@ -95,7 +100,7 @@ export const targetPaths = {
     /** ex: ui({...}, "table") → .../user-table.tsx */
     ui: ({ featureName, componentName }: ComponentPathParams, uiType: string) =>
       f(
-        `/${featureName}/components/${componentName}/${toJoinedKebabCase(
+        `/${featureName}/components/${componentName}/${stringHelpers.kebabCaseJoin(
           componentName,
           uiType
         )}.tsx`
@@ -113,9 +118,9 @@ export const targetPaths = {
       }
     ) =>
       f(
-        `/${featureName}/actions/${toJoinedKebabCase(
+        `/${featureName}/actions/${stringHelpers.kebabCaseJoin(
           type === "custom"
-            ? toKebabCase(
+            ? stringHelpers.toKebabCase(
                 customAction?.name || "error_custom-action-name-not-specified"
               )
             : `${featureName}-crud-actions`
@@ -131,48 +136,3 @@ export const targetPaths = {
   componentTest: ({ feature, name }: FeaturePathParams) =>
     f(`/${feature}/components/${name}/${name}.test.tsx`),
 };
-
-/*
-
-    // renderServer: (
-    //   { featureName, componentName }: ComponentPathParams,
-    //   renderAsList: boolean
-    // ) =>
-    //   f(
-    //     `/${featureName}/components/${componentName}/${toJoinedKebabCase(
-    //       componentName,
-    //       renderAsList ? "list-renderer" : "renderer"
-    //     )}.tsx`
-    //   ),
-
-  component: (feature: string, name: string) =>
-    f(`/${feature}/components/${name}/${name}.tsx`,
-
-  uiTable: (feature: string, name: string) =>
-    f(`/${feature}/components/${name}/${toPascalCase(
-      name
-    )}Table.tsx`,
-
-  uiModal: (feature: string, name: string) =>
-    f(`/${feature}/components/${name}/${toPascalCase(
-      name
-    )}Modal.tsx`,
-
-  formCreate: (feature: string, name: string) =>
-    f(`/${feature}/components/${name}/Create${toPascalCase(
-      name
-    )}Form.tsx`,
-
-  formEdit: (feature: string, name: string) =>
-    f(`/${feature}/components/${name}/Edit${toPascalCase(
-      name
-    )}Form.tsx`,
-
-  formDelete: (feature: string, name: string) =>
-    f(`/${feature}/components/${name}/Delete${toPascalCase(
-      name
-    )}Form.tsx`,
-
-  store: (feature: string) => f(`/${feature}/store.ts`),
-
-    */

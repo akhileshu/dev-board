@@ -7,9 +7,23 @@ export const featuresList: FeatureConfig[] = [
       rendering: [
         {
           name: "sampleProject",
-          option: {
-            renderAsList: true,
-          },
+          isEditable: false,
+          isPage: false,
+          type: "list",
+        },
+        {
+          name: "template",
+          restResourceName: "templates",
+          isEditable: false,
+          isPage: true,
+          type: "list",
+        },
+        {
+          name: "template",
+          restResourceName: "templates",
+          isEditable: true,
+          isPage: true,
+          type: "detail",
         },
       ],
       forms: {
@@ -40,12 +54,7 @@ export const featuresList: FeatureConfig[] = [
         { operation: "create", name: "createProjectFromTemplate" },
       ],
     },
-    // zodSchemas: [
-    //   "createTemplateInput",
-    //   "updateTemplateInput",
-    //   "deleteTemplateInput",
-    //   "createProjectFromTemplateInput",
-    // ],
+
     zodSchemas: [
       {
         resourceName: "template",
@@ -58,17 +67,6 @@ export const featuresList: FeatureConfig[] = [
     ],
     types: ["template", "projectFromTemplate"],
     constants: ["template", "projectFromTemplate"],
-    // pages: [
-    //   "/templates", // list all templates
-    //   "/templates/[id]", // read , update , delete a particular template , create a project from template
-    // ],
-    pages: {
-      resourceName: "templates",
-      options: [
-        { type: "list", isEditableView: false },
-        { type: "detail", isEditableView: true },
-      ],
-    },
   },
 ];
 

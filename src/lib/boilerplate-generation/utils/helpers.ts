@@ -2,53 +2,6 @@
 import path from "path";
 import { NodePlopAPI } from "plop";
 
-// export function registerHelpers(plop: NodePlopAPI) {
-//   plop.setHelper("firstType", (types: string[] | undefined) =>
-//     types ? types[0] : "any"
-//   );
-//   plop.setHelper("firstZodSchema", (schemas: string[] | undefined) =>
-//     schemas ? schemas[0] : "anySchema"
-//   );
-//   plop.setHelper("firstServerAction", (actions: string[] | undefined) =>
-//     actions ? actions[0] : "defaultAction"
-//   );
-//   plop.setHelper("firstApiRoute", (routes: string[] | undefined) =>
-//     routes ? `'/api/${routes[0]}'` : "'api/default'"
-//   );
-//   plop.setHelper("storeImport", (store: string | undefined) =>
-//     store ? store : "useDefaultStore"
-//   );
-//   plop.setHelper("hookImports", (hooks: string[] | undefined) =>
-//     hooks ? hooks.map((h) => `use${h}`).join(", ") : ""
-//   );
-//   plop.setHelper("properCase", (str: string) =>
-//     str.replace(
-//       /\w\S*/g,
-//       (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-//     )
-//   );
-//   plop.setHelper("camelCase", (str: string) =>
-//     str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-//   );
-//   plop.setHelper("dashCase", (str: string) =>
-//     str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`).replace(/^-/, "")
-//   );
-//   plop.setHelper("first", (array: any[] | undefined) =>
-//     array ? array[0] : null
-//   );
-//   plop.setHelper("joinWithComma", (array: any[] | undefined) =>
-//     array ? array.join(", ") : ""
-//   );
-//   plop.setHelper(
-//     "withExtension",
-//     (filename: string, ext: string) =>
-//       filename.replace(new RegExp(`${ext}$`), "") + ext
-//   );
-//   plop.setHelper("relativePath", (from: string, to: string) =>
-//     path.relative(from, to).replace(/\\/g, "/")
-//   );
-// }
-
 export function registerHelpers(plop: NodePlopAPI) {
   const safe = <T>(fn: () => T, fallback: T) => {
     try {
@@ -59,9 +12,7 @@ export function registerHelpers(plop: NodePlopAPI) {
       return fallback;
     }
   };
-  /**
-   *
-   * in Handlebars helpers, when using rest parameters (...parts), the last argument is always the Handlebars options object — not an actual string input. So:
+  /**in Handlebars helpers, when using rest parameters (...parts), the last argument is always the Handlebars options object — not an actual string input. So:
    */
   // function stripOptions(args: any[]) {
   //   const last = args[args.length - 1];
@@ -70,9 +21,10 @@ export function registerHelpers(plop: NodePlopAPI) {
   //     : args;
   // }
   function stringParts(args: any[]) {
-    return args.filter((part) => typeof part === "string" && part.trim() !== "");
+    return args.filter(
+      (part) => typeof part === "string" && part.trim() !== ""
+    );
   }
-
 
   plop.setHelper("firstType", (types: string[] | undefined) =>
     safe(() => types?.[0] ?? "any", "__MISSING_firstType")
@@ -196,47 +148,40 @@ export function registerHelpers(plop: NodePlopAPI) {
   );
 }
 
-export const toKebabCase = (str: string) =>
-  str &&
-  str
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
-    .replace(/\s+/g, "-")
-    .toLowerCase();
-// EXISTING HELPERS
-/*
-  plop.setHelper("camelCase", (str: string) =>
-    safe(
-      () => str.replace(/-([a-z])/g, (g) => g[1].toUpperCase()),
-      "__ERROR_camelCase"
-    )
-  );
-*/
+export const stringHelpers = {
+  toKebabCase(str: string): string {
+    return str
+      .replace(/([a-z])([A-Z])/g, "$1-$2")
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+  },
 
-export function toPascalCase(str: string): string {
-  return str
-    .replace(/[_-]+/g, " ") // convert snake/kebab to spaces
-    .replace(/\s+(.)/g, (_, group1) => group1.toUpperCase()) // capitalize first letter after space
-    .replace(/^(.)/, (_, group1) => group1.toUpperCase()) // capitalize first letter
-    .replace(/\s+/g, "");
-}
+  toPascalCase(str: string): string {
+    return str
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+(.)/g, (_, group1) => group1.toUpperCase())
+      .replace(/^(.)/, (_, group1) => group1.toUpperCase())
+      .replace(/\s+/g, "");
+  },
 
-export function toCamelCase(str: string): string {
-  const pascal = toPascalCase(str);
-  return pascal.charAt(0).toLowerCase() + pascal.slice(1);
-}
+  toCamelCase(str: string): string {
+    const pascal = stringHelpers.toPascalCase(str);
+    return pascal.charAt(0).toLowerCase() + pascal.slice(1);
+  },
 
-export function toJoinedKebabCase(...parts: string[]): string {
-  return parts
-    .filter(Boolean)
-    .join("-") // Join with hyphens
-    .replace(/([a-z])([A-Z])/g, "$1-$2") // Convert camelCase to kebab-case
-    .toLowerCase(); // Convert to lowercase
-}
+  kebabCaseJoin(...parts: string[]): string {
+    return parts
+      .filter(Boolean)
+      .join("-")
+      .replace(/([a-z])([A-Z])/g, "$1-$2")
+      .toLowerCase();
+  },
 
-export function toJoinedSnakeCase(...parts: string[]): string {
-  return parts
-    .filter(Boolean)
-    .join("_") // Join with underscores
-    .replace(/([a-z])([A-Z])/g, "$1_$2") // Handle camelCase boundaries
-    .toLowerCase(); // Final lowercase
-}
+  snakeCaseJoin(...parts: string[]): string {
+    return parts
+      .filter(Boolean)
+      .join("_")
+      .replace(/([a-z])([A-Z])/g, "$1_$2")
+      .toLowerCase();
+  },
+};
