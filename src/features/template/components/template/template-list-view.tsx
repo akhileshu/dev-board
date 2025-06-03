@@ -6,15 +6,22 @@ import { cn } from "@/lib/utils";
 import { templateActions } from "../../actions";
 import Link from "next/link";
 import { Button } from "@/lib/form-and-inputs/button";
+import { Template } from "@prisma/client";
 
 type TemplateMinimalInfoProps = {
-  template:unknown;
+  template: Template;
 };
 function TemplateMinimalInfo({ template }: TemplateMinimalInfoProps) {
   return (
-    <Link key={ Template.id} href={`/templates/${ Template.id}`}>
+    <Link key={template.id} href={`/templates/${template.id}`}>
       <div className="p-4 border rounded hover:bg-gray-50 transition cursor-pointer space-y-1">
-        update boilerplate here
+        <div className="font-semibold">{template.type}</div>
+        <div className="text-sm text-gray-600 line-clamp-1">
+          {template.description}
+        </div>
+        <div className="text-xs text-gray-500">
+          Updated: {template.updatedAt.toLocaleDateString()}
+        </div>
       </div>
     </Link>
   );

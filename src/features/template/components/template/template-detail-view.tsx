@@ -7,6 +7,7 @@ import { templateActions } from "../../actions";
 
 import { EditableCard } from "@/lib/form-and-inputs/editable-card";
 import { EditTemplateForm } from "./edit-template-form";
+import { Template } from "@prisma/client";
 
 
 type TemplateDetailViewProps = {
@@ -40,7 +41,7 @@ export function TemplateDetailView({
 }
 
 type RenderTemplateProps = {
-  template:unknown;
+  template:Template;
 };
 
 function RenderTemplate({ template }: RenderTemplateProps) {
