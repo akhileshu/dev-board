@@ -3,3 +3,4 @@ export const template = {
 };
 
 export type Template = (typeof template)[keyof typeof template];
+

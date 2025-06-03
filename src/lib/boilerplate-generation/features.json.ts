@@ -50,15 +50,15 @@ export const featuresList: FeatureConfig[] = [
     serverActions: {
       generateCRUD: true,
       custom: [
-        { operation: "read", name: "getTemplateSampleProjects" },
-        { operation: "create", name: "createProjectFromTemplate" },
+        { operation: "read", name: "TemplateSampleProjects" },
+        { operation: "create", name: "ProjectFromTemplate" },
       ],
     },
 
     zodSchemas: [
       {
         resourceName: "template",
-        type: ["create", "delete", "edit"],
+        type: ["create", "delete", "update"],
       },
       {
         resourceName: "ProjectFromTemplate",

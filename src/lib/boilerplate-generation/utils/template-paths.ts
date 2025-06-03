@@ -12,8 +12,7 @@ export const templatePaths = {
     formCreate: t("/components/form-create.hbs"),
     formEdit: t("/components/form-edit.hbs"),
     formDelete: t("/components/form-delete.hbs"),
-    uiTable: t("/components/ui-table.hbs"),
-    uiModal: t("/components/ui-modal.hbs"),
+    uiComponent: t("/components/ui-component.hbs"),
   },
   serverActions: {
     serverActionsCRUD: t("/server-actions/serverActionsCRUD.hbs"),

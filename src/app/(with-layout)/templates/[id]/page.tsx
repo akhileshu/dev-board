@@ -14,11 +14,11 @@ export default async function templates({
   params,
   searchParams,
 }: PageProps) {
-  const { id } = await params;
+  //const { slug } = await params;
   //const filters = (await searchParams).filters;
 
   // Render Single Template
-    const templateResult = await templateActions.getById(id);
+    const templateResult = await templateActions.getById();
 
   return (
     <TemplateDetailView templateResult={ templateResult } className={cn("")} />

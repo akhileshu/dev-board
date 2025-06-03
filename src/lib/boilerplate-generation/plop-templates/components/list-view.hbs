@@ -37,12 +37,14 @@ export function {{pascalCase name}}ListView({
 
   return (
     <AppCard title={cardTitle} className={cn("space-y-4", className)}>
-      <Button className="" disabled={false} onClick={} >
-        create {{camelCase name}}
-      </Button>
-      {data.map((item) => (
-        <{{pascalCase name}}MinimalInfo key={item.id} {{camelCase name}}={item} />
-      ))}
+      <div>
+        <Button className="" disabled={false} onClick={console.log} >
+          create {{camelCase name}}
+        </Button>
+        {data.map((item) => (
+          <{{pascalCase name}}MinimalInfo key={item.id} {{camelCase name}}={item} />
+        ))}
+      </div>
     </AppCard>
   );
 }

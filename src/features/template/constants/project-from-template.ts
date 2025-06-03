@@ -3,3 +3,4 @@ export const projectFromTemplate = {
 };
 
 export type ProjectFromTemplate = (typeof projectFromTemplate)[keyof typeof projectFromTemplate];
+

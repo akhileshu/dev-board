@@ -23,16 +23,15 @@ import {
   checkLimit,
   incrementLimit,
 } from "../../../lib/limit-db-writes/limitHandler";
-import { Template } from "@prisma/client";
 
-export async function getTemplates(): Promise<FetchResponse<Template[]>> {
+export async function getTemplates(): Promise<FetchResponse<unknown>> {
   return handleFetchAction(async () => {
     const templates = await myPrisma.template.findMany();
     return fetchSuccess(templates);
   });
 }
 
-export async function getTemplateById(id: string): Promise<FetchResponse<Template>> {
+export async function getTemplateById(id: string): Promise<FetchResponse<unknown>> {
   return handleFetchAction(async () => {
     const template = await myPrisma.template.findUnique({
       where: { id },

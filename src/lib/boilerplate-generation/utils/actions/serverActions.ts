@@ -25,6 +25,12 @@ export const GenerateActionsForServerActions = (
   // 2. Handle custom server actions
   if (serverActions?.custom?.length) {
     serverActions.custom.forEach((customAction) => {
+      function updateServerActionName() {
+        const op = customAction.operation.toLowerCase();
+        const prefix = op === "read" ? "get" : op;
+        customAction.name = `${prefix}${customAction.name}`;
+      }
+      updateServerActionName();
       actions.push({
         type: "add",
         path: targetPaths.serverActions.serverAction(

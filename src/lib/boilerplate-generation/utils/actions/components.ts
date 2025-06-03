@@ -110,7 +110,8 @@ function addUI(
   feature: FeatureConfig,
   actions: ActionType[]
 ) {
-  const data = { name: UIComponentConfig.name };
+  const flag = `is${stringHelpers.toPascalCase(uiType)}Component`;
+  const data = { name: UIComponentConfig.name, [flag]: true };
 
   actions.push({
     type: "add",
@@ -118,14 +119,12 @@ function addUI(
       { featureName: feature.name, componentName: UIComponentConfig.name },
       uiType
     ),
-    templateFile: getTemplateFilePath(
-      `ui${stringHelpers.toPascalCase(uiType)}`
-    ),
+    templateFile: templatePaths.components.uiComponent,
     data,
   });
 }
 
-function getTemplateFilePath(key: string) {
+function getTemplateFilePath(key: string):string {
   const templateFilePath =
     templatePaths.components[key as keyof typeof templatePaths.components];
   if (!templateFilePath) {
@@ -133,6 +132,6 @@ function getTemplateFilePath(key: string) {
       `Template file for key "${key}" not found in templatePaths.components`
     );
   }
-  return templateFilePath;
+  return templateFilePath as string;
 }
 

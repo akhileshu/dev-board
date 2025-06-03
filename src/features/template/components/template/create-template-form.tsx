@@ -7,10 +7,7 @@ import AppForm from "@/lib/forms-inputs/form";
 import { useHandleFormState } from "@/lib/form-and-inputs/useHandleFormState";
 
 export function CreateTemplateForm() {
-  const [state, formAction, isPending] = useActionState(
-    placeholderCreateAction,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState(placeholderCreateAction, initialState);
 
   useHandleFormState({
     state,
@@ -24,11 +21,11 @@ export function CreateTemplateForm() {
         action={formAction}
         variant="default"
         submitVariant="default"
-        submitProps={{
+        submitProps={ {
           isPending,
           buttonState: { disabled: isPending },
           label: "Create Template",
-        }}
+        } }
       >
         <p>Creation form fields go here.</p>
       </AppForm>
