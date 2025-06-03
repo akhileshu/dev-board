@@ -1,5 +1,3 @@
-
-
 import { Answers } from "inquirer";
 
 export type pageResourceType =
@@ -33,8 +31,6 @@ type FeatureComponents = {
   ui?: Partial<Record<UIType, ComponentConfig[]>>;
 };
 
-
-
 export type CRUDOperation = "create" | "read" | "update" | "delete";
 export interface FeatureConfig {
   name: string;
@@ -47,7 +43,7 @@ export interface FeatureConfig {
       name: string;
     }[];
   };
-  prismaSchemas?: string[];
+  prismaModels?: string[];
   zodSchemas?: {
     resourceName: string;
     type: zodSchemaType[];
@@ -145,7 +141,6 @@ export interface PlopData extends Answers {
 //     ],
 //   },
 // },
-
 
 //   {
 //     name: "video",

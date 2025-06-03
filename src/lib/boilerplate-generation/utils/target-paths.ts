@@ -25,9 +25,6 @@ type ComponentPathParams = {
 type ServerActionType = "custom" | "crud";
 
 export const targetPaths = {
-  /** ex: prismaModel("user") → prisma/models/user.prisma */
-  prismaModel: (schemaName: string) => `prisma/models/${schemaName}.prisma`,
-
   /** ex: schema("video", "createTemplateSchema") → src/features/video/schemas/createTemplateSchema.ts */
   schema: ({
     feature,
@@ -63,6 +60,9 @@ export const targetPaths = {
   /** ex: constant("video", "videoStatus") → src/features/video/constants/videoStatus.ts */
   constant: ({ feature, name }: FeaturePathParams) =>
     f(`/${feature}/constants/${name}.ts`),
+  /** ex: prismaModel("user") → prisma/models/user.prisma */
+  prismaModel: ({ name }: FeaturePathParams) =>
+    `prisma/models/${name}.prisma`,
 
   components: {
     /**- User-List-View.tsx
@@ -77,7 +77,7 @@ export const targetPaths = {
           componentName,
           renderAsList ? "List-View" : "Detail-View"
         )}.tsx`
-      ),  
+      ),
 
     /** ex: src/app/(with-layout)/video/upload/page.tsx */
     // page: (page: string) => `src/app/(with-layout)/${page}/page.tsx`,

@@ -13,10 +13,12 @@ export const GenerateActionsForFeatureAssets = (
     types,
     utils,
     constants,
+    prismaModels,
     name: featureName,
-    prismaSchemas,
   } = feature;
 
+
+  let templateFile = templatePaths.zodSchema;
   zodSchemas?.forEach(({ resourceName, type }) => {
     type.forEach((schemaType) => {
       actions.push({
@@ -26,77 +28,58 @@ export const GenerateActionsForFeatureAssets = (
           name: resourceName,
           type: schemaType,
         }),
-        templateFile: templatePaths.zodSchema,
+        templateFile,
         data: {
           name: resourceName,
           type: schemaType,
+          isMainSchema: true,
         },
       });
     });
+  });
 
-    const flatZodSchemas = zodSchemas?.flatMap(({ resourceName, type }) =>
-      type.map((schemaType) => ({
-        resourceName,
-        type: schemaType,
-      }))
-    );
-    if (flatZodSchemas?.length) {
+  const flatZodSchemas = zodSchemas?.flatMap(({ resourceName, type }) =>
+    type.map((schemaType) => ({ resourceName, type: schemaType }))
+  );
+
+  if (flatZodSchemas?.length) {
+    actions.push({
+      type: "add",
+      path: targetPaths.schemaIndex({ feature: featureName }),
+      templateFile,
+      data: {
+        zodSchemas: flatZodSchemas,
+        isExportSchema: true,
+      },
+      force: true,
+    });
+  }
+
+  // Loop through asset types and add actions using shared template
+  const assetConfigs: {
+    items: string[] | undefined;
+    getPath: (args: { feature: string; name: string }) => string;
+    flag: string;
+  }[] = [
+    { items: hooks, getPath: targetPaths.hook, flag: "isHook" },
+    { items: types, getPath: targetPaths.type, flag: "isType" },
+    { items: utils, getPath: targetPaths.util, flag: "isUtils" },
+    { items: constants, getPath: targetPaths.constant, flag: "isConstant" },
+    {
+      items: prismaModels,
+      getPath: targetPaths.prismaModel,
+      flag: "isPrismaModel",
+    },
+  ];
+  templateFile = templatePaths.multiFileTemplate;
+  assetConfigs.forEach(({ items, getPath, flag }) => {
+    items?.forEach((name) => {
       actions.push({
         type: "add",
-        path: targetPaths.schemaIndex({
-          feature: featureName,
-        }),
-        templateFile: templatePaths.zodSchemaIndex,
-        data: { zodSchemas: flatZodSchemas },
-        force: true, // optional: overwrite if exists
+        path: getPath({ feature: featureName, name }),
+        templateFile,
+        data: { name, [flag]: true },
       });
-    }
-  });
-
-  hooks?.forEach((hookName) => {
-    actions.push({
-      type: "add",
-      path: targetPaths.hook({ feature: featureName, name: hookName }),
-      templateFile: templatePaths.hook,
-      data: { name: hookName },
-    });
-  });
-
-  types?.forEach((typeName) => {
-    actions.push({
-      type: "add",
-      path: targetPaths.type({ feature: featureName, name: typeName }),
-      templateFile: templatePaths.type,
-      data: { name: typeName },
-    });
-  });
-
-  utils?.forEach((utilName) => {
-    actions.push({
-      type: "add",
-      path: targetPaths.util({ feature: featureName, name: utilName }),
-      templateFile: templatePaths.util,
-      data: { name: utilName },
-    });
-  });
-
-  constants?.forEach((constName) => {
-    actions.push({
-      type: "add",
-      path: targetPaths.constant({ feature: featureName, name: constName }),
-      templateFile: templatePaths.constant,
-      data: { name: constName },
-    });
-  });
-
-  prismaSchemas?.forEach((schemaName) => {
-    actions.push({
-      type: "add",
-      path: targetPaths.prismaModel(schemaName),
-      templateFile: templatePaths.prismaModel,
-      data: {
-        name: schemaName,
-      },
     });
   });
 };

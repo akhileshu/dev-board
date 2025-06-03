@@ -21,11 +21,6 @@ export const templatePaths = {
     serverActionsIndex: t("/server-actions/index.hbs"),
   },
   zodSchema: t("/zod-schema.hbs"),
-  zodSchemaIndex: t("/zod-schema-index.hbs"),
 
-  hook: t("/hook.hbs"),
-  type: t("/type.hbs"),
-  util: t("/util.hbs"),
-  constant: t("/constant.hbs"),
-  prismaModel: t("/prisma-model.hbs"),
+  multiFileTemplate: t("/multi-file-template.hbs"),
 };
