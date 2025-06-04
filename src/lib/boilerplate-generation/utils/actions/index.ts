@@ -1,5 +1,5 @@
 import { ActionType } from "plop";
-import { FeatureConfig } from "../../types";
+import { FeatureConfig } from "../../types/types";
 import { GenerateActionsForFeatureAssets } from "./assets";
 import { GenerateActionsForFeatureComponents } from "./components";
 import { GenerateActionsForServerActions } from "./serverActions";
@@ -13,4 +13,3 @@ export const getActionsForFeature = (feature: FeatureConfig) => {
 
   return actions;
 };
-

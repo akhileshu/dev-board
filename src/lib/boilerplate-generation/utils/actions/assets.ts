@@ -1,5 +1,5 @@
 import { ActionType } from "plop";
-import { FeatureConfig } from "../../types";
+import { FeatureConfig } from "../../types/types";
 import { targetPaths } from "../target-paths";
 import { templatePaths } from "../template-paths";
 
@@ -16,7 +16,6 @@ export const GenerateActionsForFeatureAssets = (
     prismaModels,
     name: featureName,
   } = feature;
-
 
   let templateFile = templatePaths.zodSchema;
   zodSchemas?.forEach(({ resourceName, type }) => {

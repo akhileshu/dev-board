@@ -1,44 +1,12 @@
 import { Answers } from "inquirer";
-
-export type pageResourceType =
-  | "list" /* /templates */
-  | "detail" /* /templates/id */;
-
-export type RenderingComponentConfig = {
-  name: string; //"template"
-  isPage: boolean; //true
-  restResourceName?: string; //"templates"
-  type: pageResourceType; //"list"
-  isEditable?: boolean; //true
-};
-
-export type ComponentConfig = {
-  name: string;
-  option?: {
-    generateTestFile?: boolean;
-  };
-};
-
-// Usage convention: UI uses "edit", API/actions use "update"
-export type FormType = "create" | "edit" | "delete";
-export const formTypes: FormType[] = ["create", "edit", "delete"];
-
-export type UIType = "table" | "modal";
-export const uiTypes: UIType[] = ["table", "modal"];
+import { ComponentConfig } from "./component-config";
 
 export type zodSchemaType = "create" | "update" | "delete";
 export type CRUDOperation = "create" | "read" | "update" | "delete";
 
-
-type FeatureComponents = {
-  rendering?: RenderingComponentConfig[];
-  forms?: Partial<Record<FormType, ComponentConfig[]>>;
-  ui?: Partial<Record<UIType, ComponentConfig[]>>;
-};
-
 export interface FeatureConfig {
   name: string;
-  components?: FeatureComponents;
+  components?: ComponentConfig[];
 
   serverActions?: {
     generateCRUD?: boolean;

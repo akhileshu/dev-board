@@ -1,4 +1,4 @@
-import { CRUDOperation } from "../types";
+import { CRUDOperation } from "../types/types";
 import { stringHelpers } from "./helpers";
 
 const featureBasePath = "src/features";
@@ -61,8 +61,7 @@ export const targetPaths = {
   constant: ({ feature, name }: FeaturePathParams) =>
     f(`/${feature}/constants/${name}.ts`),
   /** ex: prismaModel("user") → prisma/models/user.prisma */
-  prismaModel: ({ name }: FeaturePathParams) =>
-    `prisma/models/${name}.prisma`,
+  prismaModel: ({ name }: FeaturePathParams) => `prisma/models/${name}.prisma`,
 
   components: {
     /**- User-List-View.tsx

@@ -1,7 +1,7 @@
 import { Question } from "inquirer";
 import { NodePlopAPI } from "plop";
 import { featuresList } from "./src/lib/boilerplate-generation/features.json";
-import { PlopData } from "./src/lib/boilerplate-generation/types";
+import { PlopData } from "./src/lib/boilerplate-generation/types/types";
 import { registerHelpers } from "./src/lib/boilerplate-generation/utils/helpers";
 import {
   getDefaultParts,

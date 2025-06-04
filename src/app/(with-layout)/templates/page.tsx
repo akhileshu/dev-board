@@ -10,18 +10,17 @@ type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export default async function template({
+export default async function templates({
   params,
   searchParams,
 }: PageProps) {
   //const { slug } = await params;
   //const filters = (await searchParams).filters;
 
-// Render List of Templates
+  // Render Single Template
+    const templateResult = await templateActions.getById();
 
-  const templatesResult = await templateActions.getAll();
   return (
-    <TemplateListView templatesResult={ templatesResult } className={cn("")} />
+    <TemplateDetailView templateResult={ templateResult } className={cn("")} />
   );
-
 }

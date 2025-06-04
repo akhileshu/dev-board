@@ -1,4 +1,4 @@
-import { FeatureConfig } from "../types";
+import { FeatureConfig } from "../types/types";
 
 export function getPartChoices(feature: FeatureConfig) {
   const mapping = {
@@ -24,8 +24,8 @@ export function getDefaultParts(feature: FeatureConfig) {
       key !== "name" &&
       feature[key as keyof FeatureConfig] &&
       (Array.isArray(feature[key as keyof FeatureConfig])
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ? (feature[key as keyof FeatureConfig] as any[]).length > 0
+        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (feature[key as keyof FeatureConfig] as any[]).length > 0
         : true)
   );
 }

@@ -37,12 +37,14 @@ export function SampleProjectListView({
 
   return (
     <AppCard title={cardTitle} className={cn("space-y-4", className)}>
-      <Button className="" disabled={false} onClick={} >
-        create sampleProject
-      </Button>
-      {data.map((item) => (
-        <SampleProjectMinimalInfo key={item.id} sampleProject={item} />
-      ))}
+      <div>
+        <Button className="" disabled={false} onClick={console.log} >
+          create sampleProject
+        </Button>
+        {data.map((item) => (
+          <SampleProjectMinimalInfo key={item.id} sampleProject={item} />
+        ))}
+      </div>
     </AppCard>
   );
 }
