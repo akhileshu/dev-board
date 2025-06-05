@@ -5,11 +5,12 @@ import {
   FormAction,
   PageType,
   RenderType,
+  UIConfig,
 } from "../../types/component-config";
-import { templatePaths } from "../template-paths";
-import { targetPaths } from "../target-paths";
-import { stringHelpers } from "../helpers";
 import { FeatureConfig } from "../../types/types";
+import { stringHelpers } from "../helpers";
+import { targetPaths } from "../target-paths";
+import { templatePaths } from "../template-paths";
 
 export const GenerateActionsForFeatureComponents = (
   feature: FeatureConfig,
@@ -18,6 +19,10 @@ export const GenerateActionsForFeatureComponents = (
   if (!feature.components?.length) return;
 
   feature.components.forEach((componentConfig) => {
+    componentConfig.UIs?.forEach((UIConfig) => {
+      addUI(UIConfig, feature, actions);
+    });
+
     switch (componentConfig.kind) {
       case ComponentKind.Page:
         addPage(componentConfig, feature, actions);
@@ -41,6 +46,7 @@ function addPage(
 
   pages.forEach((pageType: PageType) => {
     const isList = pageType === "list";
+    const isEditableView = config.forms?.includes("edit");
     const pageSegment = isList ? "" : "[id]";
     const pagePath = targetPaths.components.page(
       `${restResource}/${pageSegment}`
@@ -61,7 +67,7 @@ function addPage(
       type: "add",
       path: viewPath,
       templateFile: templatePaths.components.view(isList),
-      data: { name, renderAsList: isList },
+      data: { name, renderAsList: isList, isEditableView },
     });
   });
 
@@ -83,7 +89,7 @@ function addComponentRender(
 
   renderTypes.forEach((renderType: RenderType) => {
     const isList = renderType === "list";
-
+    const isEditableView = config.forms?.includes("edit");
     actions.push({
       type: "add",
       path: targetPaths.components.view(
@@ -91,7 +97,7 @@ function addComponentRender(
         isList
       ),
       templateFile: templatePaths.components.view(isList),
-      data: { name, renderAsList: isList },
+      data: { name, renderAsList: isList, isEditableView },
     });
   });
 }
@@ -115,6 +121,26 @@ function addComponentForm(
       ),
       data: { name },
     });
+  });
+}
+
+function addUI(
+  UIConfig: UIConfig,
+  feature: FeatureConfig,
+  actions: ActionType[]
+) {
+  const { name, type } = UIConfig;
+  const flag = `is${stringHelpers.toPascalCase(type)}Component`;
+  const data = { name, [flag]: true };
+
+  actions.push({
+    type: "add",
+    path: targetPaths.components.ui(
+      { featureName: feature.name, componentName: name },
+      type
+    ),
+    templateFile: templatePaths.components.uiComponent,
+    data,
   });
 }
 

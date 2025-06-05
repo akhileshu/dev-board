@@ -2,6 +2,11 @@ export type PageType = "list" | "detail";
 export type RenderType = "list" | "detail";
 // Usage convention: UI uses "edit", API/actions use "update"
 export type FormAction = "create" | "edit" | "delete";
+export type UIType = "table" | "modal";
+export type UIConfig = {
+  type: UIType;
+  name: string;
+};
 
 export enum ComponentKind {
   Page = "page",
@@ -12,6 +17,11 @@ export enum ComponentKind {
 type Base = {
   name: string;
   kind: ComponentKind;
+  UIs?: UIConfig[];
+  //
+  pages?: PageType[];
+  renderTypes?: RenderType[];
+  forms?: FormAction[];
 };
 
 type Page = Base & {
@@ -56,4 +66,3 @@ type FeatureComponents = {
 }[]>>;
 };
 */
-

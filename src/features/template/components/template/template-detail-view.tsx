@@ -5,6 +5,8 @@ import { renderStatusMessage } from "@/components/app/status-message/renderStatu
 import { cn } from "@/lib/utils";
 import { templateActions } from "../../actions";
 
+import { EditableCard } from "@/lib/form-and-inputs/editable-card";
+import { EditTemplateForm } from "./edit-template-form";
 
 
 type TemplateDetailViewProps = {
@@ -23,9 +25,16 @@ export function TemplateDetailView({
 
   const { data } = templateResult;
 
+
   return (
     <AppCard title={cardTitle} className={cn("space-y-2", className)}>
-      <RenderTemplate template={data} />
+      <EditableCard
+          key={data.id}
+          title="Template"
+          className={className}
+          editForm={<EditTemplateForm template={data} />}
+          renderComponent={<RenderTemplate template={data} />}
+        />
     </AppCard>
   );
 }

@@ -4,51 +4,6 @@ import { FeatureConfig } from "./types/types";
 export const featuresList: FeatureConfig[] = [
   {
     name: "template",
-    // components: {
-    //   rendering: [
-    //     {
-    //       name: "sampleProject",
-    //       isEditable: false,
-    //       isPage: false,
-    //       type: "list",
-    //     },
-    //     {
-    //       name: "template",
-    //       restResourceName: "templates",
-    //       isEditable: false,
-    //       isPage: true,
-    //       type: "list",
-    //     },
-    //     {
-    //       name: "template",
-    //       restResourceName: "templates",
-    //       isEditable: true,
-    //       isPage: true,
-    //       type: "detail",
-    //     },
-    //   ],
-    //   forms: {
-    //     create: [
-    //       {
-    //         name: "template",
-    //       },
-    //       {
-    //         name: "projectFromTemplate",
-    //       },
-    //     ],
-    //     edit: [
-    //       {
-    //         name: "template",
-    //       },
-    //     ],
-    //     delete: [
-    //       {
-    //         name: "template",
-    //       },
-    //     ],
-    //   },
-    // },
-
     components: [
       {
         name: "template",
@@ -56,6 +11,12 @@ export const featuresList: FeatureConfig[] = [
         kind: ComponentKind.Page,
         pages: ["detail", "list"],
         forms: ["create", "edit", "delete"],
+        // UIs: [
+        //   {
+        //     type: "modal",
+        //     name: "confirmTemplateDeletion",
+        //   },
+        // ],
       },
       {
         name: "projectFromTemplate",
@@ -88,5 +49,70 @@ export const featuresList: FeatureConfig[] = [
     ],
     types: ["template", "projectFromTemplate"],
     constants: ["template", "projectFromTemplate"],
+  },
+  {
+    name: "project",
+    components: [
+      {
+        name: "project",
+        restResource: "projects",
+        kind: ComponentKind.Page,
+        pages: ["detail", "list"],
+        forms: ["create", "edit", "delete"],
+        UIs: [{ type: "table", name: "ProjectTable" }],
+      },
+      {
+        name: "projectTimeline",
+        restResource: "projectTimelines",
+        kind: ComponentKind.Page,
+        pages: ["detail", "list"],
+        forms: ["create", "edit", "delete"],
+        UIs: [{ type: "table", name: "TimelineTable" }],
+      },
+      {
+        name: "phase",
+        restResource: "phases",
+        kind: ComponentKind.Page,
+        pages: ["detail", "list"],
+        forms: ["create", "edit", "delete"],
+        UIs: [{ type: "table", name: "PhaseTable" }],
+      },
+      {
+        name: "feature",
+        restResource: "features",
+        kind: ComponentKind.Page,
+        pages: ["list", "detail"],
+        forms: ["create", "edit", "delete"],
+        UIs: [{ type: "table", name: "FeatureTable" }],
+      },
+    ],
+    serverActions: {
+      generateCRUD: true,
+      custom: [
+        { operation: "read", name: "ProjectWithMVP" },
+        { operation: "read", name: "TimelineWithPhases" },
+        { operation: "read", name: "ProjectFeatures" },
+      ],
+    },
+    zodSchemas: [
+      {
+        resourceName: "project",
+        type: ["create", "update", "delete"],
+      },
+      {
+        resourceName: "projectTimeline",
+        type: ["create", "update"],
+      },
+      {
+        resourceName: "phase",
+        type: ["create", "update"],
+      },
+      {
+        resourceName: "feature",
+        type: ["create", "update"],
+      },
+    ],
+    types: ["project", "projectTimeline", "phase", "feature"],
+    constants: ["project", "projectTimeline", "phase", "feature"],
   },
 ];

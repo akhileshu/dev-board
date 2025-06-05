@@ -53,6 +53,59 @@ export interface PlopData extends Answers {
 export const featuresList: FeatureConfig[] = [
   {
     name: "template",
+    components: [
+      {
+        name: "template",
+        restResource: "templates",
+        kind: ComponentKind.Page,
+        pages: ["detail", "list"],
+        forms: ["create", "edit", "delete"],
+        UIs: [
+          {
+            type: "modal",
+            name: "confirmTemplateDeletion",
+          },
+        ],
+      },
+      {
+        name: "projectFromTemplate",
+        kind: ComponentKind.ComponentForm,
+        forms: ["create"],
+      },
+      {
+        name: "sampleProject",
+        kind: ComponentKind.ComponentRender,
+        renderTypes: ["list"],
+      },
+    ],
+    serverActions: {
+      generateCRUD: true,
+      custom: [
+        { operation: "read", name: "TemplateSampleProjects" },
+        { operation: "create", name: "ProjectFromTemplate" },
+      ],
+    },
+
+    zodSchemas: [
+      {
+        resourceName: "template",
+        type: ["create", "delete", "update"],
+      },
+      {
+        resourceName: "ProjectFromTemplate",
+        type: ["create"],
+      },
+    ],
+    types: ["template", "projectFromTemplate"],
+    constants: ["template", "projectFromTemplate"],
+  }
+];
+*/
+
+/*
+export const featuresList: FeatureConfig[] = [
+  {
+    name: "template",
     components: {
       rendering: [
         {
